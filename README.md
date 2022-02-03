@@ -24,7 +24,7 @@ ipwnder_lite [-p/-d]
 ## Credit  
 axi0mX: checkm8 exploit  
 checkra1n team: checkra1n  
-LinusHenze: rmsigchks  
+LinusHenze: rmsigcheck  
 MatthewPierson: ipwndfu fork  
 Cryptiiiic: t8010 support  
 synackuk: s5l8950x support  
