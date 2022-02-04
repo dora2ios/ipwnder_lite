@@ -60,7 +60,6 @@ static int patch_payload(io_client_t client)
     int r;
     
     int i=0;
-    char* trampoline;
     
     r = -1;
     
@@ -124,7 +123,6 @@ static void set_global_state(io_client_t client)
 {
     transfer_t result;
     unsigned int val;
-    unsigned int maxVal;
     UInt32 sent;
     
     memset(&blank, '\x41', 2048);

@@ -3,15 +3,17 @@
 #include <dirent.h>
 #include <sys/stat.h>
 
+#ifdef USE_A6EXP
 #include <partial.h>
-
 #include <checkm8_s5l8950x.h>
+#endif
 #include <checkm8_s5l8960x.h>
 #include <checkm8_t8010.h>
 
 io_client_t client;
 ipwnder_payload_t payload;
 
+#ifdef USE_A6EXP
 #ifndef IPHONEOS_ARM
 char *outdir = "image3/";
 const char *n41_ibss = "image3/ibss.n41";
@@ -42,6 +44,7 @@ static int dl_file(const char* url, const char* path, const char* realpath){
     }
     return 0;
 }
+#endif
 
 static void usage(char** argv)
 {
@@ -112,6 +115,7 @@ int main(int argc, char** argv)
     
     client->isDemotion = demotionFlag;
     
+#ifdef USE_A6EXP
     if(client->isDemotion == false && (client->devinfo.cpid == 0x8950 || client->devinfo.cpid == 0x8955)) {
         const char* url;
         const char* path;
@@ -204,13 +208,16 @@ int main(int argc, char** argv)
         fclose(fd);
         
     }
+#endif
     
-    if(client->devinfo.cpid == 0x8950 || client->devinfo.cpid == 0x8955){
-        r = checkm8_s5l8950x(client, payload);
-    } else if(client->devinfo.cpid == 0x8960){
+    if(client->devinfo.cpid == 0x8960){
         r = checkm8_s5l8960x(client);
     } else if(client->devinfo.cpid == 0x8010){
         r = checkm8_t8010(client);
+#ifdef USE_A6EXP
+    } else if(client->devinfo.cpid == 0x8950 || client->devinfo.cpid == 0x8955){
+        r = checkm8_s5l8950x(client, payload);
+#endif
     }
     
     return 0;
