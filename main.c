@@ -54,7 +54,7 @@ static void usage(char** argv)
 
 int main(int argc, char** argv)
 {
-    int r;
+    int r=0;
     
     bool demotionFlag = false;
     if(argc == 1) {

