@@ -1,14 +1,11 @@
 #include <iousb.h>
 
-int boot_checkm8_32(io_client_t client, unsigned char* data, size_t sz)
+int exec_payload(io_client_t client, unsigned char* data, size_t sz)
 {
     transfer_t result;
-    size_t blanksz;
     
-    blanksz = 16;
-    unsigned char blank[blanksz];
-    
-    memset(&blank, '\0', blanksz);
+    unsigned char blank[16];
+    memset(&blank, '\0', 16);
     
     LOG_PROGRESS("[%s] reconnecting", __FUNCTION__);
     io_reset(client);
@@ -21,14 +18,14 @@ int boot_checkm8_32(io_client_t client, unsigned char* data, size_t sz)
         return -1;
     }
     
-    result = usb_ctrl_transfer(client, 0x21, 1, 0x0000, 0x0000, blank, blanksz);
-    DEBUGLOG("[%s] (1/5) %x", __FUNCTION__, result.ret);
+    result = usb_ctrl_transfer(client, 0x21, 1, 0x0000, 0x0000, blank, 16);
+    DEBUGLOG("[%s] SETUP (1/4) %x", __FUNCTION__, result.ret);
     result = usb_ctrl_transfer(client, 0x21, 1, 0x0000, 0x0000, NULL, 0);
-    DEBUGLOG("[%s] (2/5) %x", __FUNCTION__, result.ret);
+    DEBUGLOG("[%s] SETUP (2/4) %x", __FUNCTION__, result.ret);
     result = usb_ctrl_transfer(client, 0xA1, 3, 0x0000, 0x0000, blank, 6);
-    DEBUGLOG("[%s] (3/5) %x", __FUNCTION__, result.ret);
+    DEBUGLOG("[%s] SETUP (3/4) %x", __FUNCTION__, result.ret);
     result = usb_ctrl_transfer(client, 0xA1, 3, 0x0000, 0x0000, blank, 6);
-    DEBUGLOG("[%s] (4/5) %x", __FUNCTION__, result.ret);
+    DEBUGLOG("[%s] SETUP (4/4) %x", __FUNCTION__, result.ret);
     
     LOG_PROGRESS("[%s] sending payload", __FUNCTION__);
     
@@ -39,7 +36,7 @@ int boot_checkm8_32(io_client_t client, unsigned char* data, size_t sz)
             size = ((sz - len) > 0x800) ? 0x800 : (sz - len);
             result = usb_ctrl_transfer(client, 0x21, 1, 0x0000, 0x0000, (unsigned char*)&data[len], size);
             if(result.wLenDone != size || result.ret != kIOReturnSuccess){
-                ERROR("[%s] ERROR: Failed to send payload [%x, %x]", __FUNCTION__, result.ret, (unsigned int)result.wLenDone);
+                ERROR("[%s] SEND1_ERROR: Failed to send payload [%x, %x]", __FUNCTION__, result.ret, (unsigned int)result.wLenDone);
                 return -1;
             }
             len += size;
@@ -47,7 +44,7 @@ int boot_checkm8_32(io_client_t client, unsigned char* data, size_t sz)
     }
     
     result = usb_ctrl_transfer_with_time(client, 0xA1, 2, 0xFFFF, 0x0000, NULL, 0, 100);
-    DEBUGLOG("[%s] (5/5) %x", __FUNCTION__, result.ret);
+    DEBUGLOG("[%s] SEND_2 %x", __FUNCTION__, result.ret);
     
     return 0;
 }

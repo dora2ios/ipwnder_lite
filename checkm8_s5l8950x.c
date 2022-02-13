@@ -411,7 +411,7 @@ int checkm8_s5l8950x(io_client_t client, ipwnder_payload_t payload)
             return 0;
         }
         LOG_DONE("[%s] pwned!", __FUNCTION__);
-        boot_checkm8_32(client, payload.payload, payload.len);
+        exec_payload(client, payload.payload, payload.len);
         
         return 1;
     }
