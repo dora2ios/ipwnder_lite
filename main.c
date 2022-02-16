@@ -216,10 +216,13 @@ int main(int argc, char** argv)
     } else if(client->devinfo.cpid == 0x8010){
         r = checkm8_t8010(client);
 #ifdef USE_A6EXP
-    } else if(client->devinfo.cpid == 0x8950 || client->devinfo.cpid == 0x8955){
+    } else if(client->devinfo.cpid == 0x8950 ||
+              client->devinfo.cpid == 0x8955){
         r = checkm8_s5l8950x(client, payload);
 #endif
-    } else if(client->devinfo.cpid == 0x8930){
+    } else if(client->devinfo.cpid == 0x8920 ||
+              client->devinfo.cpid == 0x8922 ||
+              client->devinfo.cpid == 0x8930){
         if(client->isDemotion == true) {
             ERROR("[%s] ERROR: demotion is only compatible with checkm8 exploit!", __FUNCTION__);
             return -1;

