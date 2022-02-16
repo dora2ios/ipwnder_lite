@@ -126,6 +126,10 @@ static int patch_payload(io_client_t client)
         *(uint32_t*)(payload + 0x18c + 0x10) = 0x00000001; // demote_flag
         char* pwndStr = "demoted";
         memcpy(payload + 0x17f, pwndStr, 7);
+        // enable _copy_payload
+        // *(uint32_t*)(payload + 0xa8) = 0x0a000005; // beq _end -> beq _copy_payload
+        // *(uint32_t*)(payload + 0xc0) = 0xeaffffff; // b   _end -> b   _copy_payload
+        
     } else {
         *(uint32_t*)(payload + 0x18c + 0x10) = 0x00000000; // demote_flag
         //char* pwndStr = "ipwnder";
