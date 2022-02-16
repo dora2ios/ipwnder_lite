@@ -327,7 +327,7 @@ static int send_payload(io_client_t client)
     return 0;
 }
 
-int checkm8_s5l8950x(io_client_t client, ipwnder_payload_t payload)
+int checkm8_s5l8950x(io_client_t client, ipwnder_payload_t ibss)
 {
     IOReturn result;
     
@@ -411,7 +411,7 @@ int checkm8_s5l8950x(io_client_t client, ipwnder_payload_t payload)
             return 0;
         }
         LOG_DONE("[%s] pwned!", __FUNCTION__);
-        exec_payload(client, payload.payload, payload.len);
+        exec_payload(client, ibss.payload, ibss.len);
         
         return 1;
     }
