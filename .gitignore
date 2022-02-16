@@ -5,3 +5,5 @@ t8010_j/
 iphoneos_deb/
 junk
 ipwnder_*
+*.o
+*.bin

@@ -11,6 +11,7 @@ SOURCE		= \
                 iousb.c \
                 checkm8_s5l8960x.c \
                 checkm8_t8010.c \
+                limera1n.c \
                 common.c
 
 SOURCE32	= \

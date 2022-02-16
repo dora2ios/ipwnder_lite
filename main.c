@@ -7,6 +7,7 @@
 #include <partial.h>
 #include <checkm8_s5l8950x.h>
 #endif
+#include <limera1n.h>
 #include <checkm8_s5l8960x.h>
 #include <checkm8_t8010.h>
 
@@ -218,6 +219,12 @@ int main(int argc, char** argv)
     } else if(client->devinfo.cpid == 0x8950 || client->devinfo.cpid == 0x8955){
         r = checkm8_s5l8950x(client, payload);
 #endif
+    } else if(client->devinfo.cpid == 0x8930){
+        if(client->isDemotion == true) {
+            ERROR("[%s] ERROR: demotion is only compatible with checkm8 exploit!", __FUNCTION__);
+            return -1;
+        }
+        r = limera1n(client);
     }
     
     return r;
