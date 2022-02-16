@@ -28,5 +28,6 @@ LinusHenze: rmsigcheck
 MatthewPierson: ipwndfu fork  
 Cryptiiiic: t8010 support  
 synackuk: s5l8950x support  
+geohot: limera1n exploit  
 
 license: gplv3  
