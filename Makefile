@@ -36,12 +36,12 @@ MOBJECT		= ipwnder_macosx
 
 #PayloadDir	= payload/
 
-.PHONY: all no32bit static clean
+.PHONY: all noA6 static clean
 
 all:
 	$(MGCC) $(MGCC_FLAGS) $(MGCC_FLAGS32) $(SOURCE) $(SOURCE32) $(DYNAMIC) -o $(MOBJECT)
 
-no32bit:
+noA6:
 	$(MGCC) $(MGCC_FLAGS) $(SOURCE) -o $(MOBJECT)
 
 static:
