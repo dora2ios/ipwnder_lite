@@ -89,7 +89,7 @@ int main(int argc, char** argv)
         return -1;
     }
     
-    LOG_DONE("[%s] CPID: 0x%02x, BDID: 0x%02x, STRG: [%s]", __FUNCTION__, client->devinfo.cpid, client->devinfo.bdid, client->devinfo.srtg);
+    LOG_DONE("[%s] CPID: 0x%02x, BDID: 0x%02x, STRG: [%s]", __FUNCTION__, client->devinfo.cpid, client->devinfo.bdid, client->devinfo.srtg != NULL ? client->devinfo.srtg : "none");
     
     if(!client->devinfo.srtg) {
         if(client->devinfo.cpid != 0x8950) {
