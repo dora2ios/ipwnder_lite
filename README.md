@@ -9,10 +9,9 @@ lightweight version of ipwnder
 | S5L8930 | Apple A4 |
 | S5L8950 | Apple A6 |
 | S5L8960 | Apple A7 |
-| S8000 | Apple A9* |
-| S8003 | Apple A9* |
+| S8000 | Apple A9 |
+| S8003 | Apple A9 |
 | T8010 | Apple A10 |
-* `-p` only  
 
 
 ## How to use?
@@ -27,7 +26,7 @@ make [all/noA6]
 ipwnder_lite [-p/-d]  
 ```
 - `-p`: enter pwndfu to allow unsigned images  
-- `-d`: demote and enable jtag/swd (only checkm8 devices)  
+- `-d`: demote and enable jtag/swd (only checkm8 devices, except A9)  
 
 
 ## Credit  
