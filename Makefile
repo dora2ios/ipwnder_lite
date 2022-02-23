@@ -7,23 +7,24 @@ MGCC_FLAGS32	= -DUSE_A6EXP
 #AARCH64	= -arch arm64
 
 SOURCE		= \
-                main.c \
-                iousb.c \
-                checkm8_s5l8960x.c \
-                checkm8_t8010.c \
-                limera1n.c \
-                common.c
+		main.c \
+		iousb.c \
+		checkm8_s5l8960x.c \
+		checkm8_s8000.c \
+		checkm8_t8010.c \
+		limera1n.c \
+		common.c
 
 SOURCE32	= \
-                checkm8_s5l8950x.c \
+		checkm8_s5l8950x.c \
 		partialzip/partial.c
 
 # only x86_64?
 STATIC32	= \
-                static/libcurl.a \
-                static/libz.a \
-                -framework Security \
-                -framework LDAP
+		static/libcurl.a \
+		static/libz.a \
+		-framework Security \
+		-framework LDAP
 
 DYNAMIC		= \
 		-lcurl\

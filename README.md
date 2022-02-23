@@ -9,7 +9,10 @@ lightweight version of ipwnder
 | S5L8930 | Apple A4 |
 | S5L8950 | Apple A6 |
 | S5L8960 | Apple A7 |
+| S8000 | Apple A9* |
+| S8003 | Apple A9* |
 | T8010 | Apple A10 |
+* `-p` only  
 
 
 ## How to use?
@@ -35,5 +38,6 @@ MatthewPierson: ipwndfu fork
 Cryptiiiic: t8010 support  
 synackuk: s5l8950x support  
 geohot: limera1n exploit  
+0x7ff: eclipsa  
 
 license: gplv3  

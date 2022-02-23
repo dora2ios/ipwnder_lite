@@ -9,6 +9,7 @@
 #endif
 #include <limera1n.h>
 #include <checkm8_s5l8960x.h>
+#include <checkm8_s8000.h>
 #include <checkm8_t8010.h>
 
 io_client_t client;
@@ -215,6 +216,9 @@ int main(int argc, char** argv)
         r = checkm8_s5l8960x(client);
     } else if(client->devinfo.cpid == 0x8010){
         r = checkm8_t8010(client);
+    } else if(client->devinfo.cpid == 0x8000 ||
+              client->devinfo.cpid == 0x8003){
+        r = checkm8_s8000(client);
 #ifdef USE_A6EXP
     } else if(client->devinfo.cpid == 0x8950 ||
               client->devinfo.cpid == 0x8955){
