@@ -4,6 +4,10 @@
 
 // 0x7ff's eclipsa
 // original: https://github.com/0x7ff/eclipsa
+
+#define INSN_NOP      (0xd503201f)
+#define INSN2_NOP_NOP (0xd503201fd503201f)
+
 #define TASK_NAME_MAX (15)
 
 #define DFU_ARCH_SZ (0x310)
@@ -11,25 +15,27 @@
 #define EP0_MAX_PACKET_SZ (0x40)
 #define DFU_HEAP_BLOCK_SZ (0x40)
 
-#define TASK_STACK_MIN (0x4000)
-#define TASK_MAGIC_1 (0x74736B32)
+#define TASK_STACK_MIN   (0x4000)
+#define TASK_MAGIC_1     (0x74736B32)
 #define TASK_STACK_MAGIC (0x7374616B)
-
-#define PATCH_VAL_0 (0xD503201F) /* nop */
-#define PATCH_VAL_1 (0xD503201F) /* nop */
-#define PATCH_VAL_2 (0xD503201F) /* nop */
-#define PATCH_VAL_3 (0xD503201F) /* nop */
 
 // s8000 && s8003
 #define SYNOPSYS_ROUTINE_ADDR (0x100006718)
-#define IO_BUFFER_ADDR (0x18010D500)
-#define VROM_PAGE_TABLE_ADDR (0x1800C8400)
-#define ARCH_TASK_TRAMP_ADDR (0x10000D998)
+#define IO_BUFFER_ADDR        (0x18010D500)
+#define VROM_PAGE_TABLE_ADDR  (0x1800C8400)
+#define ARCH_TASK_TRAMP_ADDR  (0x10000D998)
 
 #define PATCH_ADDR_0 (0x100007924)
 #define PATCH_ADDR_1 (0x10000792C)
 #define PATCH_ADDR_2 (0x100007958)
 #define PATCH_ADDR_3 (0x100007C9C)
+
+#define gDemotionRegister            (0x2102BC000)
+#define gUSBSerialNumber             (0x180087958)
+#define gUSBSRNMStringDescriptor     (0x1800807DA)
+#define gUSBDescriptors              (0x1800877E0)
+#define usb_create_string_descriptor (0x10000E354)
+
 
 typedef struct {
     UInt64 prev, next;
@@ -78,6 +84,6 @@ typedef struct {
     UInt8 extra[EP0_MAX_PACKET_SZ];
 } dfu_overwrite_t;
 
-int checkm8_s8000(io_client_t client);
+int checkm8_s8000(io_client_t client, bool eclipsa);
 
 #endif

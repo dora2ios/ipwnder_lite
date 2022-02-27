@@ -50,7 +50,7 @@ static int dl_file(const char* url, const char* path, const char* realpath){
 
 static void usage(char** argv)
 {
-    printf("Usage: %s [-p/-d]\n", argv[0]);
+    printf("Usage: %s [-p/-e/-d]\n", argv[0]);
     printf("\n");
 }
 
@@ -59,6 +59,8 @@ int main(int argc, char** argv)
     int r=0;
     
     bool demotionFlag = false;
+    bool useclipsa = false;
+    
     if(argc == 1) {
         usage(argv);
         return -1;
@@ -68,6 +70,9 @@ int main(int argc, char** argv)
         demotionFlag = true;
     } else if(!strcmp(argv[1], "-p")) {
         demotionFlag = false;
+    } else if(!strcmp(argv[1], "-e")) {
+        demotionFlag = false;
+        useclipsa = true;
     } else {
         usage(argv);
         return -1;
@@ -113,6 +118,13 @@ int main(int argc, char** argv)
         }
         ERROR("[%s] ERROR: Already pwned!", __FUNCTION__);
         return 0;
+    }
+    
+    if(useclipsa == true &&
+       client->devinfo.cpid != 0x8000 &&
+       client->devinfo.cpid != 0x8003) {
+        ERROR("[%s] ERROR: \"-e\" flag is A9 only!", __FUNCTION__);
+        return -1;
     }
     
     client->isDemotion = demotionFlag;
@@ -218,7 +230,7 @@ int main(int argc, char** argv)
         r = checkm8_t8010(client);
     } else if(client->devinfo.cpid == 0x8000 ||
               client->devinfo.cpid == 0x8003){
-        r = checkm8_s8000(client);
+        r = checkm8_s8000(client, useclipsa);
 #ifdef USE_A6EXP
     } else if(client->devinfo.cpid == 0x8950 ||
               client->devinfo.cpid == 0x8955){
