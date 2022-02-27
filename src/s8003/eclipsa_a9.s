@@ -22,11 +22,8 @@ isb
 adr     x8, INSN_NOP
 ldr     w9, [x8]
 str     w9, [x19]
-ldr     w9, [x8]
 str     w9, [x20]
-ldr     w9, [x8]
 str     w9, [x21]
-ldr     w9, [x8]
 str     w9, [x22]
 
 and     x10, x10, #0xff9fffffffffffff
