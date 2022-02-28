@@ -276,7 +276,7 @@ static void set_global_state(io_client_t client)
     val = 768;
     
     int i=0;
-    while((sent = async_usb_ctrl_transfer_with_cancel(client, 0x21, 1, 0x0000, 0x0000, blank, 2048, 0)) != 0x40){
+    while((sent = async_usb_ctrl_transfer_with_cancel(client, 0x21, 1, 0x0000, 0x0000, blank, 2048, 0)) >= val){
         i++;
         DEBUGLOG("[%s] (*) retry: %x", __FUNCTION__, i);
         usleep(10000);
@@ -285,7 +285,10 @@ static void set_global_state(io_client_t client)
         usleep(10000);
     }
     
-    DEBUGLOG("[%s] (1/3) val: %x", __FUNCTION__, val);
+    val += 0x40;
+    val -= sent;
+    
+    DEBUGLOG("[%s] (1/3) sent: %x, val: %x", __FUNCTION__, sent, val);
     
     result = usb_ctrl_transfer_with_time(client, 0, 0, 0x0000, 0x0000, blank, val, 100);
     DEBUGLOG("[%s] (2/3) %x", __FUNCTION__, result.ret);
