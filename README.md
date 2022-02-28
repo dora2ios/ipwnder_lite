@@ -26,7 +26,7 @@ make [all/noA6]
 ipwnder_lite [-p/-d]  
 ```
 - `-p`: enter pwndfu to allow unsigned images  
-- `-d`: demote and enable jtag/swd (only checkm8 devices, except A9)  
+- `-d`: demote and enable jtag/swd (only checkm8 devices)  
 
 
 ## Credit  
