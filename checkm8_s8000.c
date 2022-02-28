@@ -16,9 +16,9 @@ static int checkm8_payload(io_client_t client)
     
     uint64_t demote_flag = 0;
     uint32_t PWND_STR0 = 0x4e575020; // ' PWN'
-    uint32_t PWND_STR1 = 0x635b3a44; // 'D:[c'
-    uint32_t PWND_STR2 = 0x6b636568; // 'heck'
-    uint32_t PWND_STR3 = 0x005d386d; // 'm8]\x00'
+    uint32_t PWND_STR1 = 0x695b3a44; // 'D:[i'
+    uint32_t PWND_STR2 = 0x646e7770; // 'pwnd'
+    uint32_t PWND_STR3 = 0x005d7265; // 'er]\x00'
     
     memset(&overwrite, '\0', sizeof(overwrite));
     
