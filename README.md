@@ -6,6 +6,7 @@ lightweight version of ipwnder
 | chip | name |
 |---------|----------|
 | S5L8920 |  |
+| S5L8922 |  |
 | S5L8930 | Apple A4 |
 | S5L8950 | Apple A6 |
 | S5L8960 | Apple A7 |
