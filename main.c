@@ -1,16 +1,17 @@
-#include <iousb.h>
-#include <common.h>
 #include <dirent.h>
 #include <sys/stat.h>
 
+#include <io/iousb.h>
+#include <common/common.h>
+
 #ifdef USE_A6EXP
-#include <partial.h>
-#include <checkm8_s5l8950x.h>
+#include <partialzip/partial.h>
+#include <exploit/checkm8/s5l8950x.h>
 #endif
-#include <limera1n.h>
-#include <checkm8_s5l8960x.h>
-#include <checkm8_s8000.h>
-#include <checkm8_t8010.h>
+#include <exploit/limera1n.h>
+#include <exploit/checkm8/s5l8960x.h>
+#include <exploit/checkm8/s8000.h>
+#include <exploit/checkm8/t8010.h>
 
 io_client_t client;
 ipwnder_payload_t payload;

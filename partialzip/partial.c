@@ -33,7 +33,7 @@
 #include <inttypes.h>
 #endif
 
-#include <partial.h>
+#include <partialzip/partial.h>
 
 static size_t count = 0;
 char endianness = IS_LITTLE_ENDIAN;
