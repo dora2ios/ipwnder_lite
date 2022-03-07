@@ -9,6 +9,7 @@
 #define kUSBHostReturnPipeStalled (IOReturn)0xe0005000
 #endif
 
+#define USB_NO_RESET    (0)
 #define USB_RESET       (1 << 1)
 #define USB_REENUMERATE (1 << 2)
 
