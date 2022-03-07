@@ -200,6 +200,7 @@ static int send_payload(io_client_t client)
 int checkm8_s5l8960x(io_client_t client)
 {
     IOReturn result;
+    transfer_t res;
     
     if(patch_payload(client) != 0) {
         ERROR("[%s] ERROR: Failed to generate payload!", __FUNCTION__);
@@ -246,6 +247,20 @@ int checkm8_s5l8960x(io_client_t client)
     result = io_reenumerate(client);
     DEBUGLOG("[%s] USBDeviceReEnumerate: %x", __FUNCTION__, result);
     
+    io_close(client);
+    client = NULL;
+    usleep(100000);
+    get_device_time_stage(&client, 5, DEVICE_DFU, false);
+    if(!client) {
+        ERROR("[%s] ERROR: Failed to reconnect to device", __FUNCTION__);
+        return -1;
+    }
+    
+    res = usb_ctrl_transfer_with_time(client, 0x21, 4, 0x0000, 0x0000, NULL, 0, 0);
+    DEBUGLOG("[%s] sending abort (1/1) %x", __FUNCTION__, res.ret);
+    
+    LOG_PROGRESS("[%s] reconnecting", __FUNCTION__);
+    result = io_reset(client);
     io_close(client);
     client = NULL;
     usleep(100000);
