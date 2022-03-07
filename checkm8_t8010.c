@@ -298,12 +298,9 @@ static void set_global_state(io_client_t client)
     val -= sent;
     
     DEBUGLOG("[%s] (1/3) sent: %x, val: %x", __FUNCTION__, (unsigned int)sent, val);
-    //usleep(10000);
     
     result = usb_ctrl_transfer_with_time(client, 0, 0, 0x0000, 0x0000, blank, val, 100);
     DEBUGLOG("[%s] (2/3) %x", __FUNCTION__, result.ret);
-    
-    //usleep(10000);
     
     result = usb_ctrl_transfer_with_time(client, 0x21, 4, 0x0000, 0x0000, NULL, 0, 0);
     DEBUGLOG("[%s] (3/3) %x", __FUNCTION__, result.ret);
@@ -317,15 +314,12 @@ static void heap_occupation(io_client_t client)
     
     result = usb_ctrl_transfer_with_time(client, 2, 3, 0x0000, 128, NULL, 0, 10);
     DEBUGLOG("[%s] (1/3) %x", __FUNCTION__, result.ret);
-    //usleep(10000);
     
     result = usb_ctrl_transfer_with_time(client, 0x80, 6, 0x0304, 0x040a, blank, 64, 1);
     DEBUGLOG("[%s] (2/3) %x", __FUNCTION__, result.ret);
-    //usleep(10000);
     
     result = usb_ctrl_transfer_with_time(client, 0, 0, 0x0000, 0x0000, overwriteBuf, overwriteLen, 100);
     DEBUGLOG("[%s] (3/3) %x", __FUNCTION__, result.ret);
-    //usleep(10000);
 }
 
 static int send_payload(io_client_t client)
@@ -338,10 +332,6 @@ static int send_payload(io_client_t client)
         while(len < payloadLen) {
             size = ((payloadLen - len) > 0x800) ? 0x800 : (payloadLen - len);
             result = usb_ctrl_transfer_with_time(client, 0x21, 1, 0x0000, 0x0000, (unsigned char*)&payload[len], size, 100);
-            //if(result.wLenDone != size || result.ret != kIOReturnSuccess){
-            //    ERROR("[%s] ERROR: Failed to send payload [%x, %x]", __FUNCTION__, result.ret, (unsigned int)result.wLenDone);
-            //    return -1;
-            //}
             len += size;
         }
     }

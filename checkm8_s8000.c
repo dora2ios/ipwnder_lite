@@ -260,6 +260,5 @@ int checkm8_s8000(io_client_t client)
         return 1;
     }
     
-    
     return -1;
 }
