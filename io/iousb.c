@@ -181,10 +181,10 @@ void read_serial_number(io_client_t client)
     
     unsigned char buf[0x100];
     unsigned char str[0x100];
-    memset(&str, '\0', 0x100);
-    memset(&buf, '\0', 0x100);
     
     if(client->devinfo.srtg == NULL){
+        memset(&buf, '\0', 0x100);
+        memset(&str, '\0', 0x100);
         result = usb_ctrl_transfer(client, 0x80, 6, 0x0306, 0x040a, buf, 0x100); // 8950 or up (PWND)
         if(result.ret != kIOReturnSuccess) return;
         size = *(uint8_t*)buf;
@@ -195,6 +195,8 @@ void read_serial_number(io_client_t client)
     }
     
     if(client->devinfo.srtg == NULL){
+        memset(&buf, '\0', 0x100);
+        memset(&str, '\0', 0x100);
         result = usb_ctrl_transfer(client, 0x80, 6, 0x0304, 0x040a, buf, 0x100); // 8950 or up
         if(result.ret != kIOReturnSuccess) return;
         size = *(uint8_t*)buf;
@@ -206,7 +208,7 @@ void read_serial_number(io_client_t client)
     
     if(client->devinfo.srtg == NULL){
         memset(&buf, '\0', 0x100);
-        memset(&str, '\0', 0x80);
+        memset(&str, '\0', 0x100);
         result = usb_ctrl_transfer(client, 0x80, 6, 0x0303, 0x040a, buf, 0x100); // 8930
         if(result.ret != kIOReturnSuccess) return;
         size = *(uint8_t*)buf;
@@ -327,9 +329,9 @@ int get_device_time_stage(io_client_t *pclient, unsigned int time, uint16_t stag
         if (io_open(pclient, stage, srnm) == 0) {
             return 0;
         }
-        usleep(100000);
+        //usleep(100000);
         //usleep(250000);
-        //sleep(1);
+        sleep(1);
     }
     return -1;
 }

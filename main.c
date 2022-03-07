@@ -39,7 +39,7 @@ const char *p103_ibss = "/tmp/image3/ibss.p103";
 
 static int dl_file(const char* url, const char* path, const char* realpath){
     int r;
-    LOG_WAIT("[%s] Downloading image: %s ...", __FUNCTION__, realpath);
+    LOG("[%s] Downloading image: %s ...", __FUNCTION__, realpath);
     r = partialzip_download_file(url, path, realpath);
     if(r != 0){
         ERROR("[%s] ERROR: Failed to get image!", __FUNCTION__);
@@ -75,13 +75,13 @@ int main(int argc, char** argv)
         return -1;
     }
     
-    LOG_WAIT("[%s] Waiting for device in DFU mode...", __FUNCTION__);
+    LOG("[%s] Waiting for device in DFU mode...", __FUNCTION__);
     
     while(get_device(DEVICE_DFU, true) != 0) {
         sleep(1);
     }
     
-    LOG_DONE("[%s] CONNECTED", __FUNCTION__);
+    LOG("[%s] CONNECTED", __FUNCTION__);
     
     if(client->hasSerialStr == false) {
         read_serial_number(client); // For iOS 10 and lower
@@ -92,7 +92,7 @@ int main(int argc, char** argv)
         return -1;
     }
     
-    LOG_DONE("[%s] CPID: 0x%02x, BDID: 0x%02x, STRG: [%s]", __FUNCTION__, client->devinfo.cpid, client->devinfo.bdid, client->devinfo.srtg != NULL ? client->devinfo.srtg : "none");
+    LOG("[%s] CPID: 0x%02x, BDID: 0x%02x, STRG: [%s]", __FUNCTION__, client->devinfo.cpid, client->devinfo.bdid, client->devinfo.srtg != NULL ? client->devinfo.srtg : "none");
     
     if(!client->devinfo.srtg) {
         if(client->devinfo.cpid != 0x8950) {
@@ -179,7 +179,7 @@ int main(int argc, char** argv)
         
         DIR *d = opendir(outdir);
         if (!d) {
-            LOG_PROGRESS("[%s] Making directory: %s", __FUNCTION__, outdir);
+            LOG("[%s] Making directory: %s", __FUNCTION__, outdir);
             r = mkdir(outdir, 0755);
             if(r != 0){
                 ERROR("[%s] ERROR: Failed to make dir: %s!", __FUNCTION__, outdir);

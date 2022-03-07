@@ -7,7 +7,7 @@ int exec_payload(io_client_t client, unsigned char* data, size_t sz)
     unsigned char blank[16];
     memset(&blank, '\0', 16);
     
-    LOG_PROGRESS("[%s] reconnecting", __FUNCTION__);
+    LOG("[%s] reconnecting", __FUNCTION__);
     io_reconnect(&client, 5, DEVICE_DFU, USB_RESET|USB_REENUMERATE, false, 1000);
     if(!client) {
         ERROR("[%s] ERROR: Failed to reconnect to device", __FUNCTION__);
@@ -23,7 +23,7 @@ int exec_payload(io_client_t client, unsigned char* data, size_t sz)
     result = usb_ctrl_transfer(client, 0xA1, 3, 0x0000, 0x0000, blank, 6);
     DEBUGLOG("[%s] SETUP (4/4) %x", __FUNCTION__, result.ret);
     
-    LOG_PROGRESS("[%s] sending payload", __FUNCTION__);
+    LOG("[%s] sending payload", __FUNCTION__);
     
     {
         size_t len = 0;
