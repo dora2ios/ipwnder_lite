@@ -4,7 +4,7 @@
 #include <io/iousb.h>
 #include <common/common.h>
 
-#ifdef USE_A6EXP
+#ifdef Apple_A6
 #include <partialzip/partial.h>
 #include <exploit/checkm8/s5l8950x.h>
 #endif
@@ -16,7 +16,7 @@
 io_client_t client;
 ipwnder_payload_t payload;
 
-#ifdef USE_A6EXP
+#ifdef Apple_A6
 #ifndef IPHONEOS_ARM
 char *outdir = "image3/";
 const char *n41_ibss = "image3/ibss.n41";
@@ -119,7 +119,7 @@ int main(int argc, char** argv)
     
     client->isDemotion = demotionFlag;
     
-#ifdef USE_A6EXP
+#ifdef Apple_A6
     if(client->isDemotion == false && (client->devinfo.cpid == 0x8950 || client->devinfo.cpid == 0x8955)) {
         const char* url;
         const char* path;
@@ -221,7 +221,7 @@ int main(int argc, char** argv)
     } else if(client->devinfo.cpid == 0x8000 ||
               client->devinfo.cpid == 0x8003){
         r = checkm8_s8000(client);
-#ifdef USE_A6EXP
+#ifdef Apple_A6
     } else if(client->devinfo.cpid == 0x8950 ||
               client->devinfo.cpid == 0x8955){
         r = checkm8_s5l8950x(client, payload);
