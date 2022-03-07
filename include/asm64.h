@@ -1,5 +1,5 @@
-#ifndef ASM_H
-#define ASM_H
+#ifndef ASM64_H
+#define ASM64_H
 
 #define INSN_MOVZ_W1_1      0x52800021
 #define INSN_STRB_W1_SP_248 0x3903e3e1
