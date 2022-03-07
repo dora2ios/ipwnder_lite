@@ -8,15 +8,15 @@ MGCC_FLAGS32	= -DUSE_A6EXP
 
 SOURCE		= \
 		main.c \
-		iousb.c \
-		checkm8_s5l8960x.c \
-		checkm8_s8000.c \
-		checkm8_t8010.c \
-		limera1n.c \
-		common.c
+		io/iousb.c \
+		exploit/checkm8/s5l8960x.c \
+		exploit/checkm8/s8000.c \
+		exploit/checkm8/t8010.c \
+		exploit/limera1n/limera1n.c \
+		common/common.c
 
 SOURCE32	= \
-		checkm8_s5l8950x.c \
+		exploit/checkm8/s5l8950x.c \
 		partialzip/partial.c
 
 # only x86_64?
