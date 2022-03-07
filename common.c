@@ -8,11 +8,7 @@ int exec_payload(io_client_t client, unsigned char* data, size_t sz)
     memset(&blank, '\0', 16);
     
     LOG_PROGRESS("[%s] reconnecting", __FUNCTION__);
-    io_reset(client);
-    io_close(client);
-    client = NULL;
-    usleep(1000);
-    get_device_time_stage(&client, 5, DEVICE_DFU, false);
+    io_reconnect(&client, 5, DEVICE_DFU, USB_RESET|USB_REENUMERATE, false, 1000);
     if(!client) {
         ERROR("[%s] ERROR: Failed to reconnect to device", __FUNCTION__);
         return -1;

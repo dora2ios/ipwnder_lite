@@ -9,6 +9,9 @@
 #define kUSBHostReturnPipeStalled (IOReturn)0xe0005000
 #endif
 
+#define USB_RESET       (1 << 1)
+#define USB_REENUMERATE (1 << 2)
+
 #define DEVICE_DFU              (0x1227)
 #define DEVICE_STAGE2           (0x1338)
 #define DEVICE_PONGO            (0x4141)
@@ -87,10 +90,16 @@ void read_serial_number(io_client_t client);
 // iokit
 void io_close(io_client_t client);
 int io_open(io_client_t *pclient, uint16_t pid, bool srnm);
-IOReturn io_reset(io_client_t client);
+void io_reset(io_client_t client, int flags);
 IOReturn io_reenumerate(io_client_t client);
 IOReturn io_resetdevice(io_client_t client);
 IOReturn io_abort_pipe_zero(io_client_t client);
+int io_reconnect(io_client_t *pclient,
+                 int retry,
+                 uint16_t stage,
+                 int flags,
+                 bool srnm,
+                 unsigned long sec);
 
 // usb transfer
 transfer_t usb_ctrl_transfer(io_client_t client, uint8_t bm_request_type, uint8_t b_request, uint16_t w_value, uint16_t w_index, unsigned char *data, uint16_t w_length);

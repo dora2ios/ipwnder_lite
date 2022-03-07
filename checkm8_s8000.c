@@ -201,7 +201,6 @@ static void heap_occupation(io_client_t client)
 
 int checkm8_s8000(io_client_t client)
 {
-    IOReturn res;
     transfer_t result;
     
     if(checkm8_payload(client) != 0) {
@@ -217,12 +216,7 @@ int checkm8_s8000(io_client_t client)
     usleep(1000);
     
     LOG_PROGRESS("[%s] reconnecting", __FUNCTION__);
-    res = io_reset(client);
-    
-    io_close(client);
-    client = NULL;
-    usleep(10000);
-    get_device_time_stage(&client, 5, DEVICE_DFU, false);
+    io_reconnect(&client, 5, DEVICE_DFU, USB_RESET|USB_REENUMERATE, false, 10000);
     if(!client) {
         ERROR("[%s] ERROR: Failed to reconnect to device", __FUNCTION__);
         return -1;
@@ -232,10 +226,7 @@ int checkm8_s8000(io_client_t client)
     set_global_state(client);
     
     LOG_PROGRESS("[%s] reconnecting", __FUNCTION__);
-    io_close(client);
-    client = NULL;
-    usleep(10000);
-    get_device_time_stage(&client, 5, DEVICE_DFU, false);
+    io_reconnect(&client, 5, DEVICE_DFU, 0, false, 10000);
     if(!client) {
         ERROR("[%s] ERROR: Failed to reconnect to device", __FUNCTION__);
         return -1;
@@ -245,10 +236,7 @@ int checkm8_s8000(io_client_t client)
     heap_occupation(client);
     
     LOG_PROGRESS("[%s] reconnecting", __FUNCTION__);
-    io_close(client);
-    client = NULL;
-    usleep(100000);
-    get_device_time_stage(&client, 5, DEVICE_DFU, true);
+    io_reconnect(&client, 5, DEVICE_DFU, 0, true, 100000);
     if(!client) {
         ERROR("[%s] ERROR: Failed to reconnect to device", __FUNCTION__);
         return -1;

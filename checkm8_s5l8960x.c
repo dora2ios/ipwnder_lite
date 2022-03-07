@@ -199,8 +199,7 @@ static int send_payload(io_client_t client)
 
 int checkm8_s5l8960x(io_client_t client)
 {
-    IOReturn result;
-    transfer_t res;
+    transfer_t result;
     
     if(patch_payload(client) != 0) {
         ERROR("[%s] ERROR: Failed to generate payload!", __FUNCTION__);
@@ -212,12 +211,7 @@ int checkm8_s5l8960x(io_client_t client)
     LOG_EXPLOIT_NAME("checkm8");
     
     LOG_PROGRESS("[%s] reconnecting", __FUNCTION__);
-    // io_devinfo will be lost
-    result = io_reset(client);
-    io_close(client);
-    client = NULL;
-    usleep(1000);
-    get_device_time_stage(&client, 5, DEVICE_DFU, false);
+    io_reconnect(&client, 5, DEVICE_DFU, USB_RESET|USB_REENUMERATE, false, 1000);
     if(!client) {
         ERROR("[%s] ERROR: Failed to reconnect to device", __FUNCTION__);
         return -1;
@@ -228,12 +222,7 @@ int checkm8_s5l8960x(io_client_t client)
     set_global_state(client);
     
     LOG_PROGRESS("[%s] reconnecting", __FUNCTION__);
-    result = io_reenumerate(client);
-    DEBUGLOG("[%s] USBDeviceReEnumerate: %x", __FUNCTION__, result);
-    io_close(client);
-    client = NULL;
-    usleep(500000);
-    get_device_time_stage(&client, 5, DEVICE_DFU, false);
+    io_reconnect(&client, 5, DEVICE_DFU, USB_REENUMERATE, false, 500000);
     if(!client) {
         ERROR("[%s] ERROR: Failed to reconnect to device", __FUNCTION__);
         return -1;
@@ -244,27 +233,17 @@ int checkm8_s5l8960x(io_client_t client)
     send_payload(client);
     
     LOG_PROGRESS("[%s] reconnecting", __FUNCTION__);
-    result = io_reenumerate(client);
-    DEBUGLOG("[%s] USBDeviceReEnumerate: %x", __FUNCTION__, result);
-    
-    io_close(client);
-    client = NULL;
-    usleep(100000);
-    get_device_time_stage(&client, 5, DEVICE_DFU, false);
+    io_reconnect(&client, 5, DEVICE_DFU, USB_REENUMERATE, false, 100000);
     if(!client) {
         ERROR("[%s] ERROR: Failed to reconnect to device", __FUNCTION__);
         return -1;
     }
     
-    res = usb_ctrl_transfer_with_time(client, 0x21, 4, 0x0000, 0x0000, NULL, 0, 0);
-    DEBUGLOG("[%s] sending abort (1/1) %x", __FUNCTION__, res.ret);
+    result = usb_ctrl_transfer_with_time(client, 0x21, 4, 0x0000, 0x0000, NULL, 0, 0);
+    DEBUGLOG("[%s] sending abort (1/1) %x", __FUNCTION__, result.ret);
     
     LOG_PROGRESS("[%s] reconnecting", __FUNCTION__);
-    result = io_reset(client);
-    io_close(client);
-    client = NULL;
-    usleep(100000);
-    get_device_time_stage(&client, 5, DEVICE_DFU, true);
+    io_reconnect(&client, 5, DEVICE_DFU, USB_RESET|USB_REENUMERATE, true, 100000);
     if(!client) {
         ERROR("[%s] ERROR: Failed to reconnect to device", __FUNCTION__);
         return -1;

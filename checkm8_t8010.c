@@ -393,11 +393,7 @@ static void rmsigcheck(io_client_t client)
     
     // send
     LOG_PROGRESS("[%s] reconnecting", __FUNCTION__);
-    io_reset(client);
-    io_close(client);
-    client = NULL;
-    usleep(1000);
-    get_device_time_stage(&client, 5, DEVICE_DFU, false);
+    io_reconnect(&client, 5, DEVICE_DFU, USB_RESET|USB_REENUMERATE, false, 1000);
     if(!client) {
         ERROR("[%s] ERROR: Failed to reconnect to device", __FUNCTION__);
         return;
@@ -420,11 +416,7 @@ static void rmsigcheck(io_client_t client)
     DEBUGLOG("[%s] write1 (2/2) %x", __FUNCTION__, result.ret);
     
     LOG_PROGRESS("[%s] reconnecting", __FUNCTION__);
-    io_reset(client);
-    io_close(client);
-    client = NULL;
-    usleep(1000);
-    get_device_time_stage(&client, 5, DEVICE_DFU, false);
+    io_reconnect(&client, 5, DEVICE_DFU, USB_RESET|USB_REENUMERATE, false, 1000);
     if(!client) {
         ERROR("[%s] ERROR: Failed to reconnect to device", __FUNCTION__);
         return;
@@ -447,11 +439,7 @@ static void rmsigcheck(io_client_t client)
     DEBUGLOG("[%s] write2 (2/2) %x", __FUNCTION__, result.ret);
     
     LOG_PROGRESS("[%s] reconnecting", __FUNCTION__);
-    io_reset(client);
-    io_close(client);
-    client = NULL;
-    usleep(1000);
-    get_device_time_stage(&client, 5, DEVICE_DFU, false);
+    io_reconnect(&client, 5, DEVICE_DFU, USB_RESET|USB_REENUMERATE, false, 1000);
     if(!client) {
         ERROR("[%s] ERROR: Failed to reconnect to device", __FUNCTION__);
         return;
@@ -462,11 +450,7 @@ static void rmsigcheck(io_client_t client)
     DEBUGLOG("[%s] (1/1) %x", __FUNCTION__, result.ret);
     
     LOG_PROGRESS("[%s] reconnecting", __FUNCTION__);
-    io_reset(client);
-    io_close(client);
-    client = NULL;
-    usleep(1000);
-    get_device_time_stage(&client, 5, DEVICE_DFU, false);
+    io_reconnect(&client, 5, DEVICE_DFU, USB_RESET|USB_REENUMERATE, false, 1000);
     if(!client) {
         ERROR("[%s] ERROR: Failed to reconnect to device", __FUNCTION__);
         return;
@@ -478,7 +462,6 @@ static void rmsigcheck(io_client_t client)
 
 int checkm8_t8010(io_client_t client)
 {
-    IOReturn result;
     
     if(patch_payload(client) != 0) {
         ERROR("[%s] ERROR: Failed to generate payload!", __FUNCTION__);
@@ -490,12 +473,7 @@ int checkm8_t8010(io_client_t client)
     LOG_EXPLOIT_NAME("checkm8");
     
     LOG_PROGRESS("[%s] reconnecting", __FUNCTION__);
-    // io_devinfo will be lost
-    result = io_reset(client);
-    io_close(client);
-    client = NULL;
-    usleep(1000);
-    get_device_time_stage(&client, 5, DEVICE_DFU, false);
+    io_reconnect(&client, 5, DEVICE_DFU, USB_RESET|USB_REENUMERATE, false, 1000);
     if(!client) {
         ERROR("[%s] ERROR: Failed to reconnect to device", __FUNCTION__);
         return -1;
@@ -505,11 +483,7 @@ int checkm8_t8010(io_client_t client)
     heap_spray(client);
     
     LOG_PROGRESS("[%s] reconnecting", __FUNCTION__);
-    result = io_reset(client);
-    io_close(client);
-    client = NULL;
-    usleep(10000);
-    get_device_time_stage(&client, 5, DEVICE_DFU, false);
+    io_reconnect(&client, 5, DEVICE_DFU, USB_RESET|USB_REENUMERATE, false, 10000);
     if(!client) {
         ERROR("[%s] ERROR: Failed to reconnect to device", __FUNCTION__);
         return -1;
@@ -519,12 +493,7 @@ int checkm8_t8010(io_client_t client)
     set_global_state(client);
     
     LOG_PROGRESS("[%s] reconnecting", __FUNCTION__);
-    result = io_reenumerate(client);
-    DEBUGLOG("[%s] USBDeviceReEnumerate: %x", __FUNCTION__, result);
-    io_close(client);
-    client = NULL;
-    usleep(500000);
-    get_device_time_stage(&client, 5, DEVICE_DFU, false);
+    io_reconnect(&client, 5, DEVICE_DFU, USB_REENUMERATE, false, 500000);
     if(!client) {
         ERROR("[%s] ERROR: Failed to reconnect to device", __FUNCTION__);
         return -1;
@@ -535,13 +504,7 @@ int checkm8_t8010(io_client_t client)
     send_payload(client);
     
     LOG_PROGRESS("[%s] reconnecting", __FUNCTION__);
-    result = io_reenumerate(client);
-    DEBUGLOG("[%s] USBDeviceReEnumerate: %x", __FUNCTION__, result);
-    
-    io_close(client);
-    client = NULL;
-    usleep(100000);
-    get_device_time_stage(&client, 5, DEVICE_DFU, true);
+    io_reconnect(&client, 5, DEVICE_DFU, USB_REENUMERATE, true, 100000);
     if(!client) {
         ERROR("[%s] ERROR: Failed to reconnect to device", __FUNCTION__);
         return -1;

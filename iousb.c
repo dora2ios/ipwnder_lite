@@ -253,15 +253,18 @@ void io_close(io_client_t client)
     client = NULL;
 }
 
-IOReturn io_reset(io_client_t client)
+void io_reset(io_client_t client, int flags)
 {
     IOReturn result;
-    result = io_resetdevice(client);
-    DEBUGLOG("[%s] ResetDevice: %x", __FUNCTION__, result);
+    if(flags & USB_RESET) {
+        result = io_resetdevice(client);
+        DEBUGLOG("[%s] ResetDevice: %x", __FUNCTION__, result);
+    }
     
-    result = io_reenumerate(client);
-    DEBUGLOG("[%s] USBDeviceReEnumerate: %x", __FUNCTION__, result);
-    return result;
+    if(flags & USB_REENUMERATE) {
+        result = io_reenumerate(client);
+        DEBUGLOG("[%s] USBDeviceReEnumerate: %x", __FUNCTION__, result);
+    }
 }
 
 int io_open(io_client_t *pclient, uint16_t pid, bool srnm)
@@ -330,6 +333,36 @@ int get_device_time_stage(io_client_t *pclient, unsigned int time, uint16_t stag
     }
     return -1;
 }
+
+int io_reconnect(io_client_t *pclient,
+                 int retry,
+                 uint16_t stage,
+                 int flags,
+                 bool srnm,
+                 unsigned long sec)
+{
+    
+    if(*pclient) {
+        io_reset(*pclient, flags);
+        io_close(*pclient);
+        *pclient = NULL;
+    }
+    
+    usleep(sec);
+    
+    if(get_device_time_stage(pclient, retry, stage, srnm) != 0) {
+        *pclient = NULL;
+        return -1;
+    }
+    
+    if(!*pclient) {
+        *pclient = NULL;
+        return -1;
+    }
+    
+    return 0;
+}
+
 
 // no timeout
 transfer_t usb_ctrl_transfer(io_client_t client, uint8_t bm_request_type, uint8_t b_request, uint16_t w_value, uint16_t w_index, unsigned char *data, uint16_t w_length)
