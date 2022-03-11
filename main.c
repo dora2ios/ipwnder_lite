@@ -60,6 +60,7 @@ int main(int argc, char** argv)
     int r=0;
     
     bool demotionFlag = false;
+    bool eclipsaStyle = false;
     
     if(argc == 1) {
         usage(argv);
@@ -70,6 +71,9 @@ int main(int argc, char** argv)
         demotionFlag = true;
     } else if(!strcmp(argv[1], "-p")) {
         demotionFlag = false;
+    } else if(!strcmp(argv[1], "-e")) {
+        demotionFlag = false;
+        eclipsaStyle = true;
     } else {
         usage(argv);
         return -1;
@@ -220,7 +224,7 @@ int main(int argc, char** argv)
         r = checkm8_t8010(client);
     } else if(client->devinfo.cpid == 0x8000 ||
               client->devinfo.cpid == 0x8003){
-        r = checkm8_s8000(client);
+        r = checkm8_s8000(client, eclipsaStyle);
 #ifdef Apple_A6
     } else if(client->devinfo.cpid == 0x8950 ||
               client->devinfo.cpid == 0x8955){

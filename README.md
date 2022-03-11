@@ -24,10 +24,11 @@ make [all/noA6]
 
 ### cmd
 ```
-ipwnder_lite [-p/-d]  
+ipwnder_lite [-p/-d/-e]  
 ```
 - `-p`: enter pwndfu to allow unsigned images  
 - `-d`: demote and enable jtag/swd (only checkm8 devices)  
+- `-e`: enter pwndfu to allow unsigned images with eclipsa/checkra1n style (only a8/a9 devices)  
 
 
 ## Credit  

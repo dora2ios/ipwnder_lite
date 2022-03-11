@@ -44,3 +44,18 @@ int exec_payload(io_client_t client, unsigned char* data, size_t sz)
     
     return 0;
 }
+
+void send_payload_no_error(io_client_t client, unsigned char* payload, size_t payloadLen)
+{
+    transfer_t result;
+    
+    {
+        size_t len = 0;
+        size_t size;
+        while(len < payloadLen) {
+            size = ((payloadLen - len) > 0x800) ? 0x800 : (payloadLen - len);
+            result = usb_ctrl_transfer_with_time(client, 0x21, 1, 0x0000, 0x0000, (unsigned char*)&payload[len], size, 100);
+            len += size;
+        }
+    }
+}
