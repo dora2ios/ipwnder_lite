@@ -223,7 +223,8 @@ int main(int argc, char** argv)
     } else if(client->devinfo.cpid == 0x8010){
         r = checkm8_t8010(client);
     } else if(client->devinfo.cpid == 0x8000 ||
-              client->devinfo.cpid == 0x8003){
+              client->devinfo.cpid == 0x8003 ||
+              client->devinfo.cpid == 0x7000){
         r = checkm8_s8000(client, eclipsaStyle);
 #ifdef Apple_A6
     } else if(client->devinfo.cpid == 0x8950 ||
