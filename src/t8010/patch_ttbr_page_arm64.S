@@ -16,8 +16,8 @@ _sigcheck_patch:
     STR     W1, [X0]
     B       _inv_tlbi
 
-.globl _main
-_main:
+.globl _patch_ttbr_page
+_patch_ttbr_page:
     LDR     X1, =TTBR0_BASE
     LDR     X2, =PAGE_OFFSET
     LDR     X3, =TLBI

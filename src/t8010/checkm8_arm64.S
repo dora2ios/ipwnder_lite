@@ -20,10 +20,11 @@ _main:
   stp   x29, x30, [sp,#-0x10]!
   mov   x29, sp
 
-  LDR   X0, =SET_USBDescriptors
+  ldr   x0, =SET_USBDescriptors
   cmp   x0, #1
   bne   _set_srnm                   // Do not set USB Descriptors anymore, this will cause a crash on t8011 (and maybe others)]
 
+_set_USBDescriptors:
   LDR   X0, =gUSBDescriptors
   LDP   X0, X1, [X0]
   ADR   X2, USB_DESCRIPTOR
