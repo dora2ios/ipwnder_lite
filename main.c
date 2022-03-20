@@ -220,7 +220,8 @@ int main(int argc, char** argv)
     
     if(client->devinfo.cpid == 0x8960){
         r = checkm8_s5l8960x(client);
-    } else if(client->devinfo.cpid == 0x8010){
+    } else if(client->devinfo.cpid == 0x8010 ||
+              client->devinfo.cpid == 0x8011){
         r = checkm8_t8010(client);
     } else if(client->devinfo.cpid == 0x8000 ||
               client->devinfo.cpid == 0x8003 ||
