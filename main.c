@@ -1,5 +1,6 @@
 #include <dirent.h>
 #include <sys/stat.h>
+#include <getopt.h>
 
 #include <io/iousb.h>
 #include <common/common.h>
@@ -15,6 +16,7 @@
 
 io_client_t client;
 ipwnder_payload_t payload;
+extern bool debug_enabled;
 
 #ifdef Apple_A6
 #ifndef IPHONEOS_ARM
@@ -49,9 +51,38 @@ static int dl_file(const char* url, const char* path, const char* realpath){
 }
 #endif
 
+static void list(void)
+{
+    printf("Devices list:\n");
+    printf("\t\x1b[36ms5l8920x\x1b[39m - \x1b[35miPhone 3GS\x1b[39m\n");
+    printf("\t\x1b[36ms5l8922x\x1b[39m - \x1b[35miPod touch 3G\x1b[39m\n");
+    printf("\t\x1b[36ms5l8930x\x1b[39m - \x1b[35mApple A4\x1b[39m\n");
+#ifdef Apple_A6
+    printf("\t\x1b[36ms5l8950x\x1b[39m - \x1b[35mApple A6\x1b[39m\n");
+    printf("\t\x1b[36ms5l8955x\x1b[39m - \x1b[35mApple A6X\x1b[39m\n");
+#endif
+    printf("\t\x1b[36ms5l8960x\x1b[39m - \x1b[35mApple A7\x1b[39m\n");
+    printf("\t\x1b[36mt7000   \x1b[39m - \x1b[35mApple A8\x1b[39m\n");
+    //printf("\t\x1b[36mt7001   \x1b[39m - \x1b[35mApple A8X\x1b[39m\n");
+    printf("\t\x1b[36ms8000   \x1b[39m - \x1b[35mApple A9 (Samsung)\x1b[39m\n");
+    printf("\t\x1b[36ms8003   \x1b[39m - \x1b[35mApple A9 (TSMC)\x1b[39m\n");
+    //printf("\t\x1b[36ms8001   \x1b[39m - \x1b[35mApple A9X\x1b[39m\n");
+    printf("\t\x1b[36mt8010   \x1b[39m - \x1b[35mApple A10 Fusion\x1b[39m\n");
+    //printf("\t\x1b[36mt8011   \x1b[39m - \x1b[35mApple A10X Fusion\x1b[39m\n");
+    //printf("\t\x1b[36mt8012   \x1b[39m - \x1b[35mApple T2\x1b[39m\n");
+    //printf("\t\x1b[36mt8015   \x1b[39m - \x1b[35mApple A11 Bionic\x1b[39m\n");
+    
+}
+
 static void usage(char** argv)
 {
-    printf("Usage: %s [-p/-e/-d]\n", argv[0]);
+    printf("Usage: %s [option]\n", argv[0]);
+    printf("  -p, --pwn\t\t\t\x1b[36muse pwndfu\x1b[39m\n");
+    printf("  -d, --demote\t\t\t\x1b[36menable jtag/swd\x1b[39m\n");
+    printf("  -e, --eclipsa\t\t\t\x1b[36muse eclipsa/checkra1n style\x1b[39m\n");
+    printf("  -h, --help\t\t\t\x1b[36mshow usage\x1b[39m\n");
+    printf("  -l, --list\t\t\t\x1b[36mshow list of supported devices\x1b[39m\n");
+    printf("  -v, --verbose\t\t\t\x1b[36menable verbose log\x1b[39m\n");
     printf("\n");
 }
 
@@ -67,16 +98,59 @@ int main(int argc, char** argv)
         return -1;
     }
     
-    if(!strcmp(argv[1], "-d")) {
-        demotionFlag = true;
-    } else if(!strcmp(argv[1], "-p")) {
-        demotionFlag = false;
-    } else if(!strcmp(argv[1], "-e")) {
-        demotionFlag = false;
-        eclipsaStyle = true;
-    } else {
-        usage(argv);
-        return -1;
+    int opt = 0;
+    bool conflict = false;
+    static struct option longopts[] = {
+        { "pwn",        no_argument,    NULL, 'p' },
+        { "demote",     no_argument,    NULL, 'd' },
+        { "verbose",    no_argument,    NULL, 'v' },
+        { "eclipsa",    no_argument,    NULL, 'e' },
+        { "help",       no_argument,    NULL, 'h' },
+        { "list",       no_argument,    NULL, 'l' },
+        { NULL, 0, NULL, 0 }
+    };
+    
+    while ((opt = getopt_long(argc, argv, "pdvehl", longopts, NULL)) > 0) {
+        switch (opt) {
+            case 'h':
+                usage(argv);
+                return 0;
+                
+            case 'l':
+                list();
+                return 0;
+                
+            case 'v':
+                debug_enabled = true;
+                DEBUGLOG("[%s] enabled: verbose log", __FUNCTION__);
+                break;
+                
+            case 'd':
+                demotionFlag = true;
+                break;
+                
+            case 'p':
+                if(conflict == true) {
+                    ERROR("[%s] these args are conflicting!", __FUNCTION__);
+                    return -1;
+                }
+                conflict = true;
+                eclipsaStyle = false;
+                break;
+                
+            case 'e':
+                if(conflict == true) {
+                    ERROR("[%s] these args are conflicting!", __FUNCTION__);
+                    return -1;
+                }
+                conflict = true;
+                eclipsaStyle = true;
+                break;
+                
+            default:
+                usage(argv);
+                return -1;
+        }
     }
     
     LOG("[%s] Waiting for device in DFU mode...", __FUNCTION__);
