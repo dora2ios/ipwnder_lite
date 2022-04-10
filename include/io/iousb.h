@@ -21,26 +21,20 @@
 #define DEVICE_RECOVERY_MODE_3  (0x1282)
 #define DEVICE_RECOVERY_MODE_4  (0x1283)
 
+bool debug_enabled;
+
 /* LOG macro */
-#ifndef IPHONEOS_ARM
-  #define ERROR(x, ...)             do { printf("\x1b[31m"x"\x1b[39m\n", ##__VA_ARGS__); } while(0)
-  #ifdef DEBUG
-    #define DEBUGLOG(x, ...)        do { printf("\x1b[34m"x"\x1b[39m\n", ##__VA_ARGS__); } while(0)
-  #else
-    #define DEBUGLOG(x, ...)
-  #endif
-  #define LOG_EXPLOIT_NAME(x, ...)  do { printf("\x1b[1m** \x1b[31mexploiting with "x"\x1b[39;0m\n", ##__VA_ARGS__); } while(0)
-  #define LOG(x, ...)      do { printf("\x1b[32m"x"\x1b[39m\n", ##__VA_ARGS__); } while(0)
-#else
-  #define ERROR(x, ...)             do { printf(""x"\n", ##__VA_ARGS__); } while(0)
-  #ifdef DEBUG
-    #define DEBUGLOG(x, ...)        do { printf(""x"\n", ##__VA_ARGS__); } while(0)
-  #else
-    #define DEBUGLOG(x, ...)
-  #endif
-  #define LOG_EXPLOIT_NAME(x, ...)  do { printf("** exploiting with "x"\n", ##__VA_ARGS__); } while(0)
-  #define LOG(x, ...)      do { printf(""x"\n", ##__VA_ARGS__); } while(0)
-#endif
+//#ifndef IPHONEOS_ARM
+#define ERROR(x, ...)             do { printf("\x1b[31m"x"\x1b[39m\n", ##__VA_ARGS__); } while(0)
+#define DEBUGLOG(x, ...)          do { if(debug_enabled) printf("\x1b[34m"x"\x1b[39m\n", ##__VA_ARGS__); } while(0)
+#define LOG_EXPLOIT_NAME(x, ...)  do { printf("\x1b[1m** \x1b[31mexploiting with "x"\x1b[39;0m\n", ##__VA_ARGS__); } while(0)
+#define LOG(x, ...)               do { printf("\x1b[32m"x"\x1b[39m\n", ##__VA_ARGS__); } while(0)
+//#else
+//#define ERROR(x, ...)             do { printf(""x"\n", ##__VA_ARGS__); } while(0)
+//#define DEBUGLOG(x, ...)          do { if(debug_enabled) printf(""x"\n", ##__VA_ARGS__); } while(0)
+//#define LOG_EXPLOIT_NAME(x, ...)  do { printf("** exploiting with "x"\n", ##__VA_ARGS__); } while(0)
+//#define LOG(x, ...)               do { printf(""x"\n", ##__VA_ARGS__); } while(0)
+//#endif
 
 typedef struct io_client_p io_client_p;
 typedef io_client_p* io_client_t;
@@ -69,13 +63,17 @@ struct io_client_p {
 
 // ra1npoc
 typedef struct {
-    void *over1;
+    // overwrite1 (used: A7/A9X-A11)
+    unsigned char *over1;
     unsigned int over1_len;
-    void *over2;
+    // overwrite2 (used: All)
+    unsigned char *over2;
     unsigned int over2_len;
-    void *stage2;
+    // stage2 (used: All)
+    unsigned char *stage2;
     unsigned int stage2_len;
-    void *pongoOS;
+    // pongoOS (used: All, but A9X does not send rdsk or kpf.)
+    unsigned char *pongoOS;
     unsigned int pongoOS_len;
 } checkra1n_payload_t;
 
@@ -95,6 +93,7 @@ typedef transfer_t async_transfer_t;
 
 int get_device(unsigned int mode, bool srnm);
 int get_device_time_stage(io_client_t *pclient, unsigned int time, uint16_t stage, bool snrm);
+void send_reboot_via_recovery(io_client_t client);
 void read_serial_number(io_client_t client);
 
 // iokit
