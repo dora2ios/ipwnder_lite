@@ -10,10 +10,11 @@ lightweight version of ipwnder
 | S5L8930 | Apple A4 |
 | S5L8950 | Apple A6 |
 | S5L8960 | Apple A7 |
-| T7000 | Apple A8 |
 | S8000 | Apple A9 |
 | S8003 | Apple A9 |
 | T8010 | Apple A10 |
+| T8011 | Apple A10X |
+| T8015 | Apple A11 |
 
 
 ## How to use?
@@ -25,12 +26,15 @@ make [all/noA6]
 
 ### cmd
 ```
-ipwnder_lite [-p/-d/-e]  
+ipwnder_macosx -h
+  Usage: ./ipwnder_macosx [option]
+    -h, --help            show usage
+    -l, --list            show list of supported devices
+    -c, --cleandfu        use cleandfu [BETA]
+    -d, --debug           enable debug log
+    -j, --demote          enable jtag/swd
+    -e, --eclipsa         use eclipsa/checkra1n style
 ```
-- `-p`: enter pwndfu to allow unsigned images  
-- `-d`: demote and enable jtag/swd (only checkm8 devices)  
-- `-e`: enter pwndfu to allow unsigned images with eclipsa/checkra1n style (only a8/a9 devices)  
-
 
 ## Credit  
 axi0mX: checkm8 exploit  
