@@ -4,18 +4,23 @@
 
 #include <io/iousb.h>
 #include <common/common.h>
+#include <common/payload.h>
+
+#include <soc/limera1n.h>
+#include <soc/ipwndfu_a8_a9.h>
+#include <soc/s5l8960x.h>
+#include <soc/t7000_s8000.h>
+#include <soc/t8010_t8015.h>
 
 #ifdef Apple_A6
 #include <partialzip/partial.h>
-#include <exploit/checkm8/s5l8950x.h>
-#endif
-#include <exploit/limera1n.h>
-#include <exploit/checkm8/s5l8960x.h>
-#include <exploit/checkm8/s8000.h>
-#include <exploit/checkm8/t8010.h>
+#include <soc/s5l8950x.h>
+
+ipwnder_payload_t data;
+#endif /* Apple_A6 */
 
 io_client_t client;
-ipwnder_payload_t payload;
+checkra1n_payload_t payload;
 extern bool debug_enabled;
 
 #ifdef Apple_A6
@@ -28,7 +33,7 @@ const char *n49_ibss = "image3/ibss.n49";
 const char *p101_ibss = "image3/ibss.p101";
 const char *p102_ibss = "image3/ibss.p102";
 const char *p103_ibss = "image3/ibss.p103";
-#else
+#else /* !IPHONEOS_ARM */
 char *outdir = "/tmp/image3/";
 const char *n41_ibss = "/tmp/image3/ibss.n41";
 const char *n42_ibss = "/tmp/image3/ibss.n42";
@@ -37,9 +42,10 @@ const char *n49_ibss = "/tmp/image3/ibss.n49";
 const char *p101_ibss = "/tmp/image3/ibss.p101";
 const char *p102_ibss = "/tmp/image3/ibss.p102";
 const char *p103_ibss = "/tmp/image3/ibss.p103";
-#endif
+#endif /* IPHONEOS_ARM */
 
-static int dl_file(const char* url, const char* path, const char* realpath){
+static int dl_file(const char* url, const char* path, const char* realpath)
+{
     int r;
     LOG("[%s] Downloading image: %s ...", __FUNCTION__, realpath);
     r = partialzip_download_file(url, path, realpath);
@@ -49,7 +55,7 @@ static int dl_file(const char* url, const char* path, const char* realpath){
     }
     return 0;
 }
-#endif
+#endif /* Apple_A6 */
 
 static void list(void)
 {
@@ -60,9 +66,9 @@ static void list(void)
 #ifdef Apple_A6
     printf("\t\x1b[36ms5l8950x\x1b[39m - \x1b[35mApple A6\x1b[39m\n");
     printf("\t\x1b[36ms5l8955x\x1b[39m - \x1b[35mApple A6X\x1b[39m\n");
-#endif
+#endif /* Apple_A6 */
     printf("\t\x1b[36ms5l8960x\x1b[39m - \x1b[35mApple A7\x1b[39m\n");
-    printf("\t\x1b[36mt7000   \x1b[39m - \x1b[35mApple A8\x1b[39m\n");
+    //printf("\t\x1b[36mt7000   \x1b[39m - \x1b[35mApple A8\x1b[39m\n");
     //printf("\t\x1b[36mt7001   \x1b[39m - \x1b[35mApple A8X\x1b[39m\n");
     printf("\t\x1b[36ms8000   \x1b[39m - \x1b[35mApple A9 (Samsung)\x1b[39m\n");
     printf("\t\x1b[36ms8003   \x1b[39m - \x1b[35mApple A9 (TSMC)\x1b[39m\n");
@@ -70,47 +76,43 @@ static void list(void)
     printf("\t\x1b[36mt8010   \x1b[39m - \x1b[35mApple A10 Fusion\x1b[39m\n");
     printf("\t\x1b[36mt8011   \x1b[39m - \x1b[35mApple A10X Fusion\x1b[39m\n");
     //printf("\t\x1b[36mt8012   \x1b[39m - \x1b[35mApple T2\x1b[39m\n");
-    //printf("\t\x1b[36mt8015   \x1b[39m - \x1b[35mApple A11 Bionic\x1b[39m\n");
-    
+    printf("\t\x1b[36mt8015   \x1b[39m - \x1b[35mApple A11 Bionic\x1b[39m\n");
 }
 
 static void usage(char** argv)
 {
     printf("Usage: %s [option]\n", argv[0]);
-    printf("  -p, --pwn\t\t\t\x1b[36muse pwndfu\x1b[39m\n");
-    printf("  -d, --demote\t\t\t\x1b[36menable jtag/swd\x1b[39m\n");
-    printf("  -e, --eclipsa\t\t\t\x1b[36muse eclipsa/checkra1n style\x1b[39m\n");
     printf("  -h, --help\t\t\t\x1b[36mshow usage\x1b[39m\n");
     printf("  -l, --list\t\t\t\x1b[36mshow list of supported devices\x1b[39m\n");
-    printf("  -v, --verbose\t\t\t\x1b[36menable verbose log\x1b[39m\n");
+    printf("  -c, --cleandfu\t\t\x1b[36muse cleandfu [BETA]\x1b[39m\n");
+    printf("  -d, --debug\t\t\t\x1b[36menable debug log\x1b[39m\n");
+    printf("  -j, --demote\t\t\t\x1b[36menable jtag/swd\x1b[39m\n");
+    printf("  -e, --eclipsa\t\t\t\x1b[36muse eclipsa/checkra1n style\x1b[39m\n");
     printf("\n");
 }
 
 int main(int argc, char** argv)
 {
-    int r=0;
+    int ret = 0;
     
+    memset(&payload, '\0', sizeof(checkra1n_payload_t));
+    
+    bool useRecovery = false;
     bool demotionFlag = false;
     bool eclipsaStyle = false;
     
-    if(argc == 1) {
-        usage(argv);
-        return -1;
-    }
-    
     int opt = 0;
-    bool conflict = false;
     static struct option longopts[] = {
-        { "pwn",        no_argument,    NULL, 'p' },
-        { "demote",     no_argument,    NULL, 'd' },
-        { "verbose",    no_argument,    NULL, 'v' },
-        { "eclipsa",    no_argument,    NULL, 'e' },
         { "help",       no_argument,    NULL, 'h' },
         { "list",       no_argument,    NULL, 'l' },
+        { "cleandfu",   no_argument,    NULL, 'c' },
+        { "debug",      no_argument,    NULL, 'd' },
+        { "demote",     no_argument,    NULL, 'j' },
+        { "eclipsa",    no_argument,    NULL, 'e' },
         { NULL, 0, NULL, 0 }
     };
     
-    while ((opt = getopt_long(argc, argv, "pdvehl", longopts, NULL)) > 0) {
+    while ((opt = getopt_long(argc, argv, "hlcdje", longopts, NULL)) > 0) {
         switch (opt) {
             case 'h':
                 usage(argv);
@@ -120,30 +122,20 @@ int main(int argc, char** argv)
                 list();
                 return 0;
                 
-            case 'v':
+            case 'd':
                 debug_enabled = true;
-                DEBUGLOG("[%s] enabled: verbose log", __FUNCTION__);
+                DEBUGLOG("[%s] enabled: debug log", __FUNCTION__);
                 break;
                 
-            case 'd':
+            case 'c':
+                useRecovery = true;
+                break;
+                
+            case 'j':
                 demotionFlag = true;
                 break;
                 
-            case 'p':
-                if(conflict == true) {
-                    ERROR("[%s] these args are conflicting!", __FUNCTION__);
-                    return -1;
-                }
-                conflict = true;
-                eclipsaStyle = false;
-                break;
-                
             case 'e':
-                if(conflict == true) {
-                    ERROR("[%s] these args are conflicting!", __FUNCTION__);
-                    return -1;
-                }
-                conflict = true;
                 eclipsaStyle = true;
                 break;
                 
@@ -153,8 +145,13 @@ int main(int argc, char** argv)
         }
     }
     
-    LOG("[%s] Waiting for device in DFU mode...", __FUNCTION__);
+    if(useRecovery) {
+        if(enter_dfu_via_recovery(client) != 0) {
+            return -1;
+        }
+    }
     
+    LOG("[%s] Waiting for device in DFU mode...", __FUNCTION__);
     while(get_device(DEVICE_DFU, true) != 0) {
         sleep(1);
     }
@@ -202,27 +199,27 @@ int main(int argc, char** argv)
         const char* url;
         const char* path;
         
-        memset(&payload, '\0', sizeof(ipwnder_payload_t));
+        memset(&data, '\0', sizeof(ipwnder_payload_t));
         
         if(client->devinfo.cpid == 0x8950) {
             if(client->devinfo.bdid == 0x00) {
                 // iPhone5,1
-                payload.path = n41_ibss;
+                data.path = n41_ibss;
                 url = "http://appldnld.apple.com/iOS7.1/031-4897.20140627.JCWhk/5ada2e6df3f933abde79738967960a27371ce9f3.zip";
                 path = "AssetData/boot/Firmware/dfu/iBSS.n41ap.RELEASE.dfu";
             } else if(client->devinfo.bdid == 0x02) {
                 // iPhone5,2
-                payload.path = n42_ibss;
+                data.path = n42_ibss;
                 url = "http://appldnld.apple.com/iOS7.1/031-4897.20140627.JCWhk/a05a5e2e6c81df2c0412c51462919860b8594f75.zip";
                 path = "AssetData/boot/Firmware/dfu/iBSS.n42ap.RELEASE.dfu";
             } else if(client->devinfo.bdid == 0x0a || client->devinfo.bdid == 0x0b) {
                 // iPhone5,3
-                payload.path = n48_ibss;
+                data.path = n48_ibss;
                 url = "http://appldnld.apple.com/iOS7.1/031-4897.20140627.JCWhk/71ece9ff3c211541c5f2acbc6be7b731d342e869.zip";
                 path = "AssetData/boot/Firmware/dfu/iBSS.n48ap.RELEASE.dfu";
             } else if(client->devinfo.bdid == 0x0e) {
                 // iPhone5,4
-                payload.path = n49_ibss;
+                data.path = n49_ibss;
                 url = "http://appldnld.apple.com/iOS7.1/031-4897.20140627.JCWhk/455309571ffb5ca30c977897d75db77e440728c1.zip";
                 path = "AssetData/boot/Firmware/dfu/iBSS.n49ap.RELEASE.dfu";
             } else {
@@ -233,17 +230,17 @@ int main(int argc, char** argv)
         } else if(client->devinfo.cpid == 0x8955) {
             if(client->devinfo.bdid == 0x00) {
                 // iPad3,4
-                payload.path = p101_ibss;
+                data.path = p101_ibss;
                 url = "http://appldnld.apple.com/iOS7.1/031-4897.20140627.JCWhk/c0cbed078b561911572a09eba30ea2561cdbefe6.zip";
                 path = "AssetData/boot/Firmware/dfu/iBSS.p101ap.RELEASE.dfu";
             } else if(client->devinfo.bdid == 0x02) {
                 // iPad3,5
-                payload.path = p102_ibss;
+                data.path = p102_ibss;
                 url = "http://appldnld.apple.com/iOS7.1/031-4897.20140627.JCWhk/3e0efaf1480c74195e4840509c5806cc83c99de2.zip";
                 path = "AssetData/boot/Firmware/dfu/iBSS.p102ap.RELEASE.dfu";
             } else if(client->devinfo.bdid == 0x04) {
                 // iPad3,6
-                payload.path = p103_ibss;
+                data.path = p103_ibss;
                 url = "http://appldnld.apple.com/iOS7.1/031-4897.20140627.JCWhk/238641fd4b8ca2153c9c696328aeeedabede6174.zip";
                 path = "AssetData/boot/Firmware/dfu/iBSS.p103ap.RELEASE.dfu";
             } else {
@@ -258,17 +255,17 @@ int main(int argc, char** argv)
         DIR *d = opendir(outdir);
         if (!d) {
             LOG("[%s] Making directory: %s", __FUNCTION__, outdir);
-            r = mkdir(outdir, 0755);
-            if(r != 0){
+            ret = mkdir(outdir, 0755);
+            if(ret != 0){
                 ERROR("[%s] ERROR: Failed to make dir: %s!", __FUNCTION__, outdir);
                 return -1;
             }
         }
         
-        FILE *fd = fopen(payload.path, "r");
+        FILE *fd = fopen(data.path, "r");
         if(!fd){
-            if(dl_file(url, path, payload.path) != 0) return -1;
-            fd = fopen(payload.path, "r");
+            if(dl_file(url, path, data.path) != 0) return -1;
+            fd = fopen(data.path, "r");
             if(!fd) {
                 ERROR("[%s] ERROR: Failed to open file!", __FUNCTION__);
                 return -1;
@@ -276,45 +273,52 @@ int main(int argc, char** argv)
         }
         
         fseek(fd, 0, SEEK_END);
-        payload.len = ftell(fd);
+        data.len = ftell(fd);
         fseek(fd, 0, SEEK_SET);
         
-        payload.payload = malloc(payload.len);
-        if (!payload.payload) {
+        data.payload = malloc(data.len);
+        if (!data.payload) {
             ERROR("[%s] ERROR: Failed to allocating file buffer!", __FUNCTION__);
             fclose(fd);
             return -1;
         }
         
-        fread(payload.payload, payload.len, 1, fd);
+        fread(data.payload, data.len, 1, fd);
         fclose(fd);
-        
     }
-#endif
+#endif /* Apple_A6 */
     
-    if(client->devinfo.cpid == 0x8960){
-        r = checkm8_s5l8960x(client);
-    } else if(client->devinfo.cpid == 0x8010 ||
-              client->devinfo.cpid == 0x8011){
-        r = checkm8_t8010(client);
-    } else if(client->devinfo.cpid == 0x8000 ||
-              client->devinfo.cpid == 0x8003 ||
-              client->devinfo.cpid == 0x7000){
-        r = checkm8_s8000(client, eclipsaStyle);
+    int flags = client->devinfo.checkm8_flag; // because it will be lost
+    
+    if(flags & (CHECKM8_A7|CHECKM8_A8_A9|CHECKM8_A9X_A11)) {
+        if(payload_gen(client, &payload, eclipsaStyle) != 0)
+            return -1;
+    }
+    
+    if(flags & CHECKM8_A7) {
+        ret = checkm8_s5l8960x(client, payload);
+    } else if(flags & CHECKM8_A8_A9) {
+        if(eclipsaStyle) {
+            ret = checkm8_t7000_s8000(client, payload);
+        } else {
+            ret = ipwndfu_a8_a9(client, payload);
+        }
+    } else if(flags & CHECKM8_A9X_A11) {
+        ret = checkm8_t8010_t8015(client, payload);
 #ifdef Apple_A6
-    } else if(client->devinfo.cpid == 0x8950 ||
-              client->devinfo.cpid == 0x8955){
-        r = checkm8_s5l8950x(client, payload);
-#endif
+    } else if(flags & CHECKM8_A6) {
+        ret = checkm8_s5l8950x(client, data);
+#endif /* Apple_A6 */
     } else if(client->devinfo.cpid == 0x8920 ||
               client->devinfo.cpid == 0x8922 ||
-              client->devinfo.cpid == 0x8930){
+              client->devinfo.cpid == 0x8930) {
         if(client->isDemotion == true) {
-            ERROR("[%s] ERROR: demotion is only compatible with checkm8 exploit!", __FUNCTION__);
+            ERROR("[%s] ERROR: demotion is only compatible with checkm8 exploit", __FUNCTION__);
             return -1;
         }
-        r = limera1n(client);
+        // limera1n devices
+        ret = limera1n(client);
     }
     
-    return r;
+    return ret;
 }

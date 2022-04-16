@@ -5,35 +5,32 @@
 .text
 
 .pool
-.set SET_USBDescriptors,            0xbad00001
+.set set_USBDescriptors,            0xbad00001
 .set gUSBDescriptors,               0xbad00002
 .set gUSBSerialNumber,              0xbad00003
 .set usb_create_string_descriptor,  0xbad00004
 .set gUSBSRNMStringDescriptor,      0xbad00005
 
-.set demote_flag,                   0xbad00006
-.set gDemotionRegister,             0xbad00007
-
 .global _main
 _main:
-  mov   x19, #0                      // HACK: do not free this usb request
-  stp   x29, x30, [sp,#-0x10]!
+  //mov   x19, #0                      // HACK: do not free this usb request
+  stp   x29, x30, [sp, #-0x10]!
   mov   x29, sp
 
-  ldr   x0, =SET_USBDescriptors
+  ldr   x0, =set_USBDescriptors
   cmp   x0, #1
   bne   _set_srnm                   // Do not set USB Descriptors anymore, this will cause a crash on t8011 (and maybe others)]
 
 _set_USBDescriptors:
-  LDR   X0, =gUSBDescriptors
-  LDP   X0, X1, [X0]
-  ADR   X2, USB_DESCRIPTOR
-  LDP   X3, X4, [X2]
-  STP   X3, X4, [X0]
-  STP   X3, X4, [X1]
-  LDP   X3, X4, [X2,#0x10]
-  STP   X3, X4, [X0,#0x10]
-  STP   X3, X4, [X1,#0x10]
+  ldr   x0, =gUSBDescriptors
+  ldp   x0, x1, [x0]
+  adr   x2, USB_DESCRIPTOR
+  ldp   x3, x4, [x2]
+  stp   x3, x4, [x0]
+  stp   x3, x4, [x1]
+  ldp   x3, x4, [x2, #0x10]
+  stp   x3, x4, [x0, #0x10]
+  stp   x3, x4, [x1, #0x10]
 
 _set_srnm:
   ldr   x0, =gUSBSerialNumber
@@ -52,21 +49,6 @@ _find_zero_loop:
 
   ldr   x1, =gUSBSRNMStringDescriptor
   strb  w0, [x1]
-
-  ldr   x0, =demote_flag
-  cmp   x0, #1
-  bne   _end
-
-_demotion:
-  ldr   x1, =gDemotionRegister
-  ldr   w0, [x1]
-  tst   w0, #1
-  beq   _end
-  ldr   w0, [x1]
-  and   w0, w0, #0xfffffffe
-  str   w0, [x1]
-  dsb   sy
-  isb
 
 _end:
   ic    iallu

@@ -1,0 +1,3 @@
+[submodule "ra1npoc"]
+	path = ra1npoc
+	url = https://github.com/dora2-iOS/ra1npoc

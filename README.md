@@ -18,7 +18,7 @@ lightweight version of ipwnder
 
 ## How to use?
 ```
-git clone https://github.com/dora2-iOS/ipwnder_lite && cd ipwnder_lite
+git clone https://github.com/dora2-iOS/ipwnder_lite --recursive && cd ipwnder_lite
 make [all/noA6]
 ```
 - for iOS 14 environment, binary must be placed under `/usr/local/bin`.  

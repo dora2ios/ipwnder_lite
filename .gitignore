@@ -1,9 +1,7 @@
 
 .DS_Store
 image3/ibss*
-t8010_j/
-iphoneos_deb/
-junk
+package/
 ipwnder_*
 *.o
 *.bin

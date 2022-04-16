@@ -1,5 +1,4 @@
 #include <io/iousb.h>
-#include <common/common.h>
 
 static unsigned char payload[2048];
 static unsigned int payloadLen = 0;
