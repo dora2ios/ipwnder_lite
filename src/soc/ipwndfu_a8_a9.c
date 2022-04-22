@@ -1,5 +1,5 @@
 /*
- * ipwnder_lite - ipwndfu_a8_a9.c .. exploit for t7000/t7001/s8000/s8001
+ * ipwnder_lite - ipwndfu_a8_a9.c .. exploit for t7000/t7001/s8000/s8003
  *
  * Copyright (c) 2021 dora2ios
  *
