@@ -1,6 +1,6 @@
 #IGCC		= xcrun -sdk iphoneos gcc
 MGCC		= xcrun -sdk macosx gcc
-MGCC_FLAGS	= -I./include -framework IOKit -framework CoreFoundation -Os -Wall $(CFLAGS) -DDEBUG
+MGCC_FLAGS	= -I./include -I./ra1npoc/src/include -framework IOKit -framework CoreFoundation -Os -Wall $(CFLAGS) -DDEBUG
 MGCC_FLAGS32	= -DApple_A6
 #IGCC_FLAGS	= $(MGCC_FLAGS) -DIPHONEOS_ARM
 #AARCH32	= -arch armv7
@@ -8,16 +8,20 @@ MGCC_FLAGS32	= -DApple_A6
 
 SOURCE		= \
 		main.c \
-		io/iousb.c \
-		exploit/checkm8/s5l8960x.c \
-		exploit/checkm8/s8000.c \
-		exploit/checkm8/t8010.c \
-		exploit/limera1n/limera1n.c \
-		common/common.c
+		src/common/payload.c \
+		src/soc/limera1n.c \
+		src/soc/ipwndfu_a8_a9.c \
+		ra1npoc/src/io/iousb.c \
+		ra1npoc/src/common/common.c \
+		ra1npoc/src/soc/s5l8960x.c \
+		ra1npoc/src/soc/t7000_s8000.c \
+		ra1npoc/src/soc/t8010_t8015.c
+
 
 SOURCE32	= \
-		exploit/checkm8/s5l8950x.c \
-		partialzip/partial.c
+		src/common/usb_0xa1_2.c \
+		src/soc/s5l8950x.c \
+		lib/partialzip/partial.c
 
 # only x86_64?
 STATIC32	= \

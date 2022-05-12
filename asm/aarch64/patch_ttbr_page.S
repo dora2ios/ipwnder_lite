@@ -16,8 +16,8 @@ _sigcheck_patch:
     STR     W1, [X0]
     B       _inv_tlbi
 
-.globl _patch_ttbr_page
-_patch_ttbr_page:
+.globl _main
+_main:
     LDR     X1, =TTBR0_BASE
     LDR     X2, =PAGE_OFFSET
     LDR     X3, =TLBI
@@ -34,13 +34,26 @@ _bit7:
     EOR     X4, X4, #0x80
 _patch:
     STR     X4, [X1, X2]
-_sctlr:
+_currentEL:
+    MOV     X6, #0xC        // EL3
+    MRS     X4, CurrentEL
+    CMP     X4, X6
+    BEQ     _sctlr_el3
+_sctlr_el1:
     MRS     X4, SCTLR_EL1
     AND     X6, X4, #0x40000
     CBZ     X6, #_inv_tlbi
-_bit19:
+_bit19_el1:
     EOR     X4, X4, #0x40000
     MSR     SCTLR_EL1, X4
+    B       _inv_tlbi
+_sctlr_el3:
+    MRS     X4, SCTLR_EL3
+    AND     X6, X4, #0x40000
+    CBZ     X6, #_inv_tlbi
+_bit19_el3:
+    EOR     X4, X4, #0x40000
+    MSR     SCTLR_EL3, X4
 _inv_tlbi:
     ISB
     DMB     SY

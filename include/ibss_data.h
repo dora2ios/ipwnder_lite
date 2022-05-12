@@ -1,5 +1,5 @@
-#ifndef DATA_H
-#define DATA_H
+#ifndef IBSS_DATA_H
+#define IBSS_DATA_H_H
 
 const char *n41_path = "image3/ibss.n41";
 const char *n42_path = "image3/ibss.n42";

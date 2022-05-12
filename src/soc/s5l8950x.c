@@ -1,6 +1,6 @@
 #include <io/iousb.h>
-#include <common/common.h>
-#include <exploit/checkm8/s5l8950x.h>
+#include <common/usb_0xa1_2.h>
+#include <soc/s5l8950x.h>
 
 static unsigned char blank[2048];
 
