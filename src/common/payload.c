@@ -372,7 +372,7 @@ int payload_gen(io_client_t client, checkra1n_payload_t* payload, bool eclipsa)
         ARCH_TASK_TRAMP_ADDR = 0x10000D998;
     } else if(client->devinfo.cpid == 0x8960) {
         // TODO
-        //load_address = 0x180380000;
+        load_address = 0x180380000;
         //sram_base = 0x180000000;
         //
         //enter_critical_section = 0x100008e70;
