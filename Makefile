@@ -25,8 +25,8 @@ SOURCE32	= \
 
 # only x86_64?
 STATIC32	= \
-		static/libcurl.a \
-		static/libz.a \
+		lib/static/libcurl.a \
+		lib/static/libz.a \
 		-framework Security \
 		-framework LDAP
 
