@@ -389,7 +389,7 @@ int payload_gen(io_client_t client, checkra1n_payload_t* payload, bool eclipsa)
         //gUSBSRNMStringDescriptor = 0x180080562;
         //gDemotionRegister = 0x20E02A000;
     } else {
-        ERROR("[%s] ERROR: failed to find offsets", __FUNCTION__);
+        ERROR("failed to find offsets");
         return -1;
     }
     
@@ -445,7 +445,7 @@ int payload_gen(io_client_t client, checkra1n_payload_t* payload, bool eclipsa)
             if(callback_size > MAX_ROP_SIZE ||
                callback_size + 0x20 > MAX_PAYLOAD_SIZE ||
                disable_wxn_offset + disable_wxn_len > MAX_PAYLOAD_SIZE) {
-                ERROR("[%s] ERROR: failed to make payload: overflow", __FUNCTION__);
+                ERROR("failed to make payload: overflow");
                 return -1;
             }
             
@@ -458,7 +458,7 @@ int payload_gen(io_client_t client, checkra1n_payload_t* payload, bool eclipsa)
             if(demotion_offset + demotion_bin_len > MAX_PAYLOAD_SIZE ||
                sigcheck_patch_offset + patch_ttbr_page_len > MAX_PAYLOAD_SIZE ||
                checkm8_arm64_offset + checkm8_arm64_len > MAX_PAYLOAD_SIZE) {
-                ERROR("[%s] ERROR: failed to make payload: overflow", __FUNCTION__);
+                ERROR("failed to make payload: overflow");
                 return -1;
             }
             
@@ -490,7 +490,7 @@ int payload_gen(io_client_t client, checkra1n_payload_t* payload, bool eclipsa)
     } else {
         // A8/A8X/A9 only
         if(!(client->devinfo.checkm8_flag & CHECKM8_A8_A9)) {
-            ERROR("[%s] ERROR: this mode is not supported", __FUNCTION__);
+            ERROR("this mode is not supported");
             return -1;
         }
         dfu_overwrite_t overwrite;

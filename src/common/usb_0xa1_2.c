@@ -7,23 +7,23 @@ int exec_payload(io_client_t client, unsigned char* data, size_t sz)
     unsigned char blank[16];
     memset(&blank, '\0', 16);
     
-    LOG("[%s] reconnecting", __FUNCTION__);
+    LOG("reconnecting");
     io_reconnect(&client, 5, DEVICE_DFU, USB_RESET|USB_REENUMERATE, false, 1000);
     if(!client) {
-        ERROR("[%s] ERROR: Failed to reconnect to device", __FUNCTION__);
+        ERROR("Failed to reconnect to device");
         return -1;
     }
     
     result = usb_ctrl_transfer(client, 0x21, 1, 0x0000, 0x0000, blank, 16);
-    DEBUGLOG("[%s] SETUP (1/4) %x", __FUNCTION__, result.ret);
+    DEBUGLOG("SETUP (1/4) %x", result.ret);
     result = usb_ctrl_transfer(client, 0x21, 1, 0x0000, 0x0000, NULL, 0);
-    DEBUGLOG("[%s] SETUP (2/4) %x", __FUNCTION__, result.ret);
+    DEBUGLOG("SETUP (2/4) %x", result.ret);
     result = usb_ctrl_transfer(client, 0xA1, 3, 0x0000, 0x0000, blank, 6);
-    DEBUGLOG("[%s] SETUP (3/4) %x", __FUNCTION__, result.ret);
+    DEBUGLOG("SETUP (3/4) %x", result.ret);
     result = usb_ctrl_transfer(client, 0xA1, 3, 0x0000, 0x0000, blank, 6);
-    DEBUGLOG("[%s] SETUP (4/4) %x", __FUNCTION__, result.ret);
+    DEBUGLOG("SETUP (4/4) %x", result.ret);
     
-    LOG("[%s] sending payload", __FUNCTION__);
+    LOG("sending payload");
     
     {
         size_t len = 0;
@@ -32,7 +32,7 @@ int exec_payload(io_client_t client, unsigned char* data, size_t sz)
             size = ((sz - len) > 0x800) ? 0x800 : (sz - len);
             result = usb_ctrl_transfer(client, 0x21, 1, 0x0000, 0x0000, (unsigned char*)&data[len], size);
             if(result.wLenDone != size || result.ret != kIOReturnSuccess){
-                ERROR("[%s] SEND1_ERROR: Failed to send payload [%x, %x]", __FUNCTION__, result.ret, (unsigned int)result.wLenDone);
+                ERROR("Failed to send payload [%x, %x]", result.ret, (unsigned int)result.wLenDone);
                 return -1;
             }
             len += size;
@@ -40,7 +40,7 @@ int exec_payload(io_client_t client, unsigned char* data, size_t sz)
     }
     
     result = usb_ctrl_transfer_with_time(client, 0xA1, 2, 0xFFFF, 0x0000, NULL, 0, 100);
-    DEBUGLOG("[%s] SEND_2 %x", __FUNCTION__, result.ret);
+    DEBUGLOG("SEND_2 %x", result.ret);
     
     return 0;
 }

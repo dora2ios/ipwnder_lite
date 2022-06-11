@@ -9,18 +9,15 @@ MGCC_FLAGS32	= -DApple_A6
 SOURCE		= \
 		main.c \
 		src/common/payload.c \
-		src/soc/limera1n.c \
-		src/soc/ipwndfu_a8_a9.c \
+		src/exploit/limera1n.c \
 		ra1npoc/src/io/iousb.c \
 		ra1npoc/src/common/common.c \
-		ra1npoc/src/soc/s5l8960x.c \
-		ra1npoc/src/soc/t7000_s8000.c \
-		ra1npoc/src/soc/t8010_t8015.c
+		ra1npoc/src/exploit/checkm8_arm64.c
 
 
 SOURCE32	= \
 		src/common/usb_0xa1_2.c \
-		src/soc/s5l8950x.c \
+		src/exploit/s5l8950x.c \
 		lib/partialzip/partial.c
 
 # only x86_64?
@@ -35,9 +32,9 @@ DYNAMIC		= \
 		-lz
 
 MOBJECT		= ipwnder_macosx
-#IOBJECT	= ra1npoc_iphoneos
-#IOBJECT32	= ra1npoc_iphoneos32
-#IOBJECT64	= ra1npoc_iphoneos64
+#IOBJECT	= ra1npoc_ios
+#IOBJECT32	= ra1npoc_ios32
+#IOBJECT64	= ra1npoc_ios64
 #ICODESIGN	= ldid -S
 
 #PayloadDir	= payload/
