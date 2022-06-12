@@ -8,51 +8,11 @@
 
 #include <exploit/limera1n.h>
 #include <exploit/checkm8_arm64.h>
-
-#ifdef Apple_A6
-#include <partialzip/partial.h>
 #include <exploit/s5l8950x.h>
-
-ipwnder_payload_t data;
-#endif /* Apple_A6 */
 
 io_client_t client;
 checkra1n_payload_t payload;
 extern bool debug_enabled;
-
-#ifdef Apple_A6
-#ifndef IPHONEOS_ARM
-char *outdir = "image3/";
-const char *n41_ibss = "image3/ibss.n41";
-const char *n42_ibss = "image3/ibss.n42";
-const char *n48_ibss = "image3/ibss.n48";
-const char *n49_ibss = "image3/ibss.n49";
-const char *p101_ibss = "image3/ibss.p101";
-const char *p102_ibss = "image3/ibss.p102";
-const char *p103_ibss = "image3/ibss.p103";
-#else /* !IPHONEOS_ARM */
-char *outdir = "/tmp/image3/";
-const char *n41_ibss = "/tmp/image3/ibss.n41";
-const char *n42_ibss = "/tmp/image3/ibss.n42";
-const char *n48_ibss = "/tmp/image3/ibss.n48";
-const char *n49_ibss = "/tmp/image3/ibss.n49";
-const char *p101_ibss = "/tmp/image3/ibss.p101";
-const char *p102_ibss = "/tmp/image3/ibss.p102";
-const char *p103_ibss = "/tmp/image3/ibss.p103";
-#endif /* IPHONEOS_ARM */
-
-static int dl_file(const char* url, const char* path, const char* realpath)
-{
-    int r;
-    LOG("Downloading image: %s ...", realpath);
-    r = partialzip_download_file(url, path, realpath);
-    if(r != 0){
-        ERROR("Failed to get image!");
-        return -1;
-    }
-    return 0;
-}
-#endif /* Apple_A6 */
 
 static void list(void)
 {
@@ -60,10 +20,8 @@ static void list(void)
     printf("\t\x1b[36ms5l8920x\x1b[39m - \x1b[35miPhone 3GS\x1b[39m\n");
     printf("\t\x1b[36ms5l8922x\x1b[39m - \x1b[35miPod touch 3G\x1b[39m\n");
     printf("\t\x1b[36ms5l8930x\x1b[39m - \x1b[35mApple A4\x1b[39m\n");
-#ifdef Apple_A6
     printf("\t\x1b[36ms5l8950x\x1b[39m - \x1b[35mApple A6\x1b[39m\n");
-    printf("\t\x1b[36ms5l8955x\x1b[39m - \x1b[35mApple A6X\x1b[39m\n");
-#endif /* Apple_A6 */
+    //printf("\t\x1b[36ms5l8955x\x1b[39m - \x1b[35mApple A6X\x1b[39m\n");
     printf("\t\x1b[36ms5l8960x\x1b[39m - \x1b[35mApple A7\x1b[39m\n");
     //printf("\t\x1b[36mt7000   \x1b[39m - \x1b[35mApple A8\x1b[39m\n");
     //printf("\t\x1b[36mt7001   \x1b[39m - \x1b[35mApple A8X\x1b[39m\n");
@@ -191,100 +149,6 @@ int main(int argc, char** argv)
     
     client->isDemotion = demotionFlag;
     
-#ifdef Apple_A6
-    if(client->isDemotion == false && (client->devinfo.cpid == 0x8950 || client->devinfo.cpid == 0x8955)) {
-        const char* url;
-        const char* path;
-        
-        memset(&data, '\0', sizeof(ipwnder_payload_t));
-        
-        if(client->devinfo.cpid == 0x8950) {
-            if(client->devinfo.bdid == 0x00) {
-                // iPhone5,1
-                data.path = n41_ibss;
-                url = "http://appldnld.apple.com/iOS7.1/031-4897.20140627.JCWhk/5ada2e6df3f933abde79738967960a27371ce9f3.zip";
-                path = "AssetData/boot/Firmware/dfu/iBSS.n41ap.RELEASE.dfu";
-            } else if(client->devinfo.bdid == 0x02) {
-                // iPhone5,2
-                data.path = n42_ibss;
-                url = "http://appldnld.apple.com/iOS7.1/031-4897.20140627.JCWhk/a05a5e2e6c81df2c0412c51462919860b8594f75.zip";
-                path = "AssetData/boot/Firmware/dfu/iBSS.n42ap.RELEASE.dfu";
-            } else if(client->devinfo.bdid == 0x0a || client->devinfo.bdid == 0x0b) {
-                // iPhone5,3
-                data.path = n48_ibss;
-                url = "http://appldnld.apple.com/iOS7.1/031-4897.20140627.JCWhk/71ece9ff3c211541c5f2acbc6be7b731d342e869.zip";
-                path = "AssetData/boot/Firmware/dfu/iBSS.n48ap.RELEASE.dfu";
-            } else if(client->devinfo.bdid == 0x0e) {
-                // iPhone5,4
-                data.path = n49_ibss;
-                url = "http://appldnld.apple.com/iOS7.1/031-4897.20140627.JCWhk/455309571ffb5ca30c977897d75db77e440728c1.zip";
-                path = "AssetData/boot/Firmware/dfu/iBSS.n49ap.RELEASE.dfu";
-            } else {
-                ERROR("Unknown device!");
-                return -1;
-            }
-                
-        } else if(client->devinfo.cpid == 0x8955) {
-            if(client->devinfo.bdid == 0x00) {
-                // iPad3,4
-                data.path = p101_ibss;
-                url = "http://appldnld.apple.com/iOS7.1/031-4897.20140627.JCWhk/c0cbed078b561911572a09eba30ea2561cdbefe6.zip";
-                path = "AssetData/boot/Firmware/dfu/iBSS.p101ap.RELEASE.dfu";
-            } else if(client->devinfo.bdid == 0x02) {
-                // iPad3,5
-                data.path = p102_ibss;
-                url = "http://appldnld.apple.com/iOS7.1/031-4897.20140627.JCWhk/3e0efaf1480c74195e4840509c5806cc83c99de2.zip";
-                path = "AssetData/boot/Firmware/dfu/iBSS.p102ap.RELEASE.dfu";
-            } else if(client->devinfo.bdid == 0x04) {
-                // iPad3,6
-                data.path = p103_ibss;
-                url = "http://appldnld.apple.com/iOS7.1/031-4897.20140627.JCWhk/238641fd4b8ca2153c9c696328aeeedabede6174.zip";
-                path = "AssetData/boot/Firmware/dfu/iBSS.p103ap.RELEASE.dfu";
-            } else {
-                ERROR("Unknown device!");
-                return -1;
-            }
-        } else {
-            ERROR("Unknown device!");
-            return -1;
-        }
-        
-        DIR *d = opendir(outdir);
-        if (!d) {
-            LOG("Making directory: %s", outdir);
-            ret = mkdir(outdir, 0755);
-            if(ret != 0){
-                ERROR("Failed to make dir: %s!", outdir);
-                return -1;
-            }
-        }
-        
-        FILE *fd = fopen(data.path, "r");
-        if(!fd){
-            if(dl_file(url, path, data.path) != 0) return -1;
-            fd = fopen(data.path, "r");
-            if(!fd) {
-                ERROR("Failed to open file!");
-                return -1;
-            }
-        }
-        
-        fseek(fd, 0, SEEK_END);
-        data.len = ftell(fd);
-        fseek(fd, 0, SEEK_SET);
-        
-        data.payload = malloc(data.len);
-        if (!data.payload) {
-            ERROR("Failed to allocating file buffer!");
-            fclose(fd);
-            return -1;
-        }
-        
-        fread(data.payload, data.len, 1, fd);
-        fclose(fd);
-    }
-#endif /* Apple_A6 */
-    
     int flags = client->devinfo.checkm8_flag; // because it will be lost
     
     if(flags & (CHECKM8_A7|CHECKM8_A8_A9|CHECKM8_A9X_A11)) {
@@ -305,10 +169,8 @@ int main(int argc, char** argv)
         }
         // limera1n devices
         ret = limera1n(client);
-#ifdef Apple_A6
     } else if(flags & CHECKM8_A6) {
-        ret = checkm8_s5l8950x(client, data);
-#endif
+        ret = checkm8_s5l8950x(client);
     } else {
         ret = checkm8_arm64(client, payload, flags);
     }
