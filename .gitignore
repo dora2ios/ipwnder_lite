@@ -6,4 +6,3 @@ ipwnder_*
 *.o
 *.bin
 rom/
-asm/s5l8950x/*.c
